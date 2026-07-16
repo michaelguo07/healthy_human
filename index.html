@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Healthy Human — a premium pediatric growth and health tracker. Log measurements, vaccines, and well-child checkups with clinical precision and warm guidance.">
+  <title>Healthy Human — Pediatric Growth &amp; Health Tracker</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Chart.js & jsPDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <div id="app">
+
+    <!-- ===== Onboarding Overlay ===== -->
+    <div id="onboarding-overlay" class="overlay">
+      <div class="onboarding-card">
+        <h1>Welcome to Healthy Human</h1>
+        <p>Track your child's growth, vaccines, and checkups with clinical precision and warm guidance.</p>
+        <form id="onboarding-form">
+          <div class="form-group">
+            <label for="onboard-name">Child's Name</label>
+            <input type="text" id="onboard-name" required placeholder="e.g., Emma">
+          </div>
+          <div class="form-group">
+            <label for="onboard-sex">Sex</label>
+            <select id="onboard-sex" required>
+              <option value="">Select...</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <span class="form-hint">Required — growth charts differ by sex</span>
+          </div>
+          <div class="form-group">
+            <label for="onboard-dob">Date of Birth</label>
+            <input type="date" id="onboard-dob" required>
+          </div>
+          <button type="submit" class="btn-primary">Get Started</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== Header ===== -->
+    <header id="app-header">
+      <div class="header-left">
+        <h1 class="app-title">Healthy Human</h1>
+      </div>
+      <div class="header-center">
+        <div class="child-selector">
+          <select id="child-selector">
+            <!-- Populated by JS: dropdown of children -->
+          </select>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="add-child-btn" class="btn-icon" title="Add Child" aria-label="Add child">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="10" y1="4" x2="10" y2="16" />
+            <line x1="4" y1="10" x2="16" y2="10" />
+          </svg>
+        </button>
+        <button id="delete-child-btn" class="btn-icon" title="Delete Profile" aria-label="Delete profile" style="color: var(--status-overdue)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+        <div class="unit-toggle" id="unit-toggle">
+          <button class="unit-btn active" data-unit="imperial">lb/in</button>
+          <button class="unit-btn" data-unit="metric">kg/cm</button>
+        </div>
+        <button id="export-btn" class="btn-icon" title="Export Data" aria-label="Export data">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 10l4 4 4-4" />
+            <line x1="10" y1="3" x2="10" y2="14" />
+            <path d="M3 14v3h14v-3" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ===== Tab Navigation ===== -->
+    <nav id="tab-nav" role="tablist">
+      <button class="tab active" role="tab" aria-selected="true" data-tab="growth" id="tab-growth">Growth</button>
+      <button class="tab" role="tab" aria-selected="false" data-tab="vaccines" id="tab-vaccines">Vaccines &amp;
+        Checkups</button>
+    </nav>
+
+    <!-- ===== Main Content ===== -->
+    <main id="main-content">
+
+      <!-- ——— Growth Tab ——— -->
+      <section id="panel-growth" class="tab-panel active" role="tabpanel" aria-labelledby="tab-growth" data-panel="growth">
+
+        <!-- Chart metric selector -->
+        <div class="chart-controls" id="chart-controls">
+          <button class="chart-metric-btn active" data-metric="weight_for_age">Weight</button>
+          <button class="chart-metric-btn" data-metric="length_for_age">Length/Height</button>
+          <button class="chart-metric-btn" data-metric="head_circumference_for_age">Head Circ.</button>
+        </div>
+
+        <!-- Hero Growth Curve Chart -->
+        <div class="chart-container" id="growth-chart-container">
+          <canvas id="growth-chart"></canvas>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="metric-cards" id="metric-cards">
+          <!-- 3 cards populated by JS -->
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-box" id="growth-summary">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Measurement Log -->
+        <div class="section-card" id="measurement-section">
+          <h2>Log a Measurement</h2>
+          <form id="measurement-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="measure-date">Date</label>
+                <input type="date" id="measure-date" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="measure-weight">Weight</label>
+                <div class="input-with-unit">
+                  <input type="number" id="measure-weight" step="0.01" min="0" placeholder="0.00">
+                  <span class="unit-label" data-imperial="lb" data-metric="kg">lb</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="measure-height">Length/Height</label>
+                <div class="input-with-unit">
+                  <input type="number" id="measure-height" step="0.1" min="0" placeholder="0.0">
+                  <span class="unit-label" data-imperial="in" data-metric="cm">in</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="measure-head">Head Circumference <span class="optional">(optional)</span></label>
+                <div class="input-with-unit">
+                  <input type="number" id="measure-head" step="0.1" min="0" placeholder="0.0">
+                  <span class="unit-label" data-imperial="in" data-metric="cm">in</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Log Measurement</button>
+          </form>
+        </div>
+
+        <!-- Measurement History -->
+        <div class="section-card" id="measurement-history">
+          <h2>Measurement History</h2>
+          <div class="table-wrapper">
+            <table id="history-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Age</th>
+                  <th>Weight</th>
+                  <th>Length/Height</th>
+                  <th>Head Circ.</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+          <p class="empty-state" id="history-empty">No measurements yet — log your first checkup above.</p>
+        </div>
+      </section>
+
+      <!-- ——— Vaccines & Checkups Tab ——— -->
+      <section id="panel-vaccines" class="tab-panel" role="tabpanel" aria-labelledby="tab-vaccines" data-panel="vaccines" hidden>
+
+        <!-- Vaccine Status -->
+        <div class="section-card" id="vaccine-status-section">
+          <h2>Vaccine Status</h2>
+          <div class="table-wrapper">
+            <table id="vaccine-table">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="name" style="cursor: pointer; user-select: none;">Vaccine <span class="sort-icon"></span></th>
+                  <th>Dose</th>
+                  <th class="sortable" data-sort="status" style="cursor: pointer; user-select: none;">Status <span class="sort-icon"></span></th>
+                  <th class="sortable" data-sort="date" style="cursor: pointer; user-select: none;">Date Given / Due <span class="sort-icon"></span></th>
+                </tr>
+              </thead>
+              <tbody id="vaccine-tbody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Log Vaccine -->
+        <div class="section-card" id="log-vaccine-section">
+          <h2>Log a Vaccine</h2>
+          <form id="vaccine-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="vaccine-select">Vaccine</label>
+                <select id="vaccine-select" required>
+                  <option value="">Select vaccine...</option>
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="vaccine-dose">Dose #</label>
+                <select id="vaccine-dose" required>
+                  <option value="">Select dose...</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="vaccine-date">Date Given</label>
+                <input type="date" id="vaccine-date" required>
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Log Vaccine</button>
+          </form>
+        </div>
+
+        <!-- Checkup Tracker -->
+        <div class="section-card" id="checkup-section">
+          <h2>Well-Child Checkups</h2>
+          <div class="next-checkup" id="next-checkup">
+            <!-- Populated by JS: next recommended checkup -->
+          </div>
+          <div class="table-wrapper">
+            <table id="checkup-table">
+              <thead>
+                <tr>
+                  <th>Visit</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="checkup-tbody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Log Checkup -->
+        <div class="section-card" id="log-checkup-section">
+          <h2>Log a Checkup</h2>
+          <form id="checkup-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="checkup-type">Visit</label>
+                <select id="checkup-type" required>
+                  <option value="">Select visit...</option>
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="checkup-date">Date</label>
+                <input type="date" id="checkup-date" required>
+              </div>
+              <div class="form-group">
+                <label for="checkup-notes">Notes <span class="optional">(optional)</span></label>
+                <input type="text" id="checkup-notes" placeholder="e.g., All clear">
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Log Checkup</button>
+          </form>
+        </div>
+
+        <!-- Source citation -->
+        <div class="source-citation" id="vaccine-source">
+          Source: AAP 2026 Immunization Schedule · AAP/Bright Futures Periodicity Schedule, 2025
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ===== Add Child Modal ===== -->
+    <div id="add-child-modal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-card">
+        <h2>Add a Child</h2>
+        <form id="add-child-form">
+          <div class="form-group">
+            <label for="new-child-name">Name</label>
+            <input type="text" id="new-child-name" required placeholder="e.g., Liam">
+          </div>
+          <div class="form-group">
+            <label for="new-child-sex">Sex</label>
+            <select id="new-child-sex" required>
+              <option value="">Select...</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <span class="form-hint">Required — growth charts differ by sex</span>
+          </div>
+          <div class="form-group">
+            <label for="new-child-dob">Date of Birth</label>
+            <input type="date" id="new-child-dob" required>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="cancel-add-child">Cancel</button>
+            <button type="submit" class="btn-primary">Add Child</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ===== Export Modal ===== -->
+    <div id="export-modal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-card">
+        <h2>Export Data</h2>
+        <p class="modal-desc">Export your child's health data to share with your pediatrician.</p>
+        <div class="export-options">
+          <button class="export-option" id="export-csv" data-format="csv">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            <span>CSV Spreadsheet</span>
+            <span class="export-desc">All measurements &amp; vaccines</span>
+          </button>
+          <button class="export-option" id="export-chart" data-format="pdf">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>
+            <span>Growth Report (PDF)</span>
+            <span class="export-desc">All growth curves in one PDF</span>
+          </button>
+          <button class="export-option" id="export-json" data-format="json">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14,2 14,8 20,8" />
+            </svg>
+            <span>JSON Data</span>
+            <span class="export-desc">Complete backup file</span>
+          </button>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="cancel-export">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Footer ===== -->
+    <footer id="app-footer">
+      <p class="disclaimer">This tool tracks and compares data using standardized references — it does not provide
+        medical advice. Always consult your pediatrician for guidance specific to your child.</p>
+      <p class="source-footer" id="growth-source-footer">Growth data: WHO Child Growth Standards, 2006 (0–24 months) ·
+        CDC Growth Charts, 2000 (2–20 years)</p>
+    </footer>
+
+  </div><!-- /#app -->
+
+  <!-- ===== Scripts (dependency order) ===== -->
+  <script src="data/who-lms.js"></script>
+  <script src="data/cdc-lms.js"></script>
+  <script src="data/vaccines.js"></script>
+  <script src="calc/growth.js"></script>
+  <script src="calc/vaccines.js"></script>
+  <script src="components/child-manager.js"></script>
+  <script src="components/growth-chart.js"></script>
+  <script src="components/metric-cards.js"></script>
+  <script src="components/measurement-form.js"></script>
+  <script src="components/vaccine-table.js"></script>
+  <script src="components/checkup-tracker.js"></script>
+  <script src="components/summary.js"></script>
+  <script src="components/export.js"></script>
+  <script src="app.js"></script>
+
+</body>
+
+</html>

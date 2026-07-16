@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head><title>Healthy Human — Data &amp; Calc Test</title></head>
+<body>
+<h1>Healthy Human — Test Results</h1>
+<pre id="output"></pre>
+
+<!-- Load data first, then calculations -->
+<script src="data/who-lms.js"></script>
+<script src="data/cdc-lms.js"></script>
+<script src="data/vaccines.js"></script>
+<script src="calc/growth.js"></script>
+<script src="calc/vaccines.js"></script>
+
+<script>
+(function () {
+  var out = [];
+  var pass = 0;
+  var fail = 0;
+
+  function log(msg) { out.push(msg); }
+  function assert(label, condition) {
+    if (condition) { pass++; log('  ✅ ' + label); }
+    else           { fail++; log('  ❌ FAIL: ' + label); }
+  }
+  function approx(a, b, tol) { return Math.abs(a - b) < (tol || 0.01); }
+
+  // ── 1. WHO LMS Data ────────────────────────────────────────────
+  log('=== WHO LMS Data ===');
+  assert('WHO_LMS exists', !!window.WHO_LMS);
+  assert('weight_for_age.male has 25 entries', window.WHO_LMS.weight_for_age.male.length === 25);
+  assert('weight_for_age.female has 25 entries', window.WHO_LMS.weight_for_age.female.length === 25);
+  assert('length_for_age.male has 25 entries', window.WHO_LMS.length_for_age.male.length === 25);
+  assert('head_circumference_for_age.female has 25 entries', window.WHO_LMS.head_circumference_for_age.female.length === 25);
+
+  // Spot-check WHO values
+  var wm0 = window.WHO_LMS.weight_for_age.male[0];
+  assert('WHO boy weight month 0: L=0.3487', approx(wm0.L, 0.3487, 0.0001));
+  assert('WHO boy weight month 0: M=3.3464', approx(wm0.M, 3.3464, 0.0001));
+  assert('WHO boy weight month 0: S=0.14602', approx(wm0.S, 0.14602, 0.00001));
+
+  var wf12 = window.WHO_LMS.weight_for_age.female[12];
+  assert('WHO girl weight month 12: M=8.9481', approx(wf12.M, 8.9481, 0.0001));
+
+  var lm6 = window.WHO_LMS.length_for_age.male[6];
+  assert('WHO boy length month 6: M=67.6236', approx(lm6.M, 67.6236, 0.0001));
+
+  // ── 2. CDC LMS Data ────────────────────────────────────────────
+  log('\n=== CDC LMS Data ===');
+  assert('CDC_LMS exists', !!window.CDC_LMS);
+  assert('CDC weight male has >200 entries', window.CDC_LMS.weight_for_age.male.length > 200);
+  assert('CDC stature male has entries', window.CDC_LMS.stature_for_age.male.length > 200);
+  assert('CDC bmi female has entries', window.CDC_LMS.bmi_for_age.female.length > 200);
+
+  // Check a key point is preserved
+  var cdcWm = window.CDC_LMS.weight_for_age.male;
+  var found36 = cdcWm.find(function(d) { return d.month === 37; });
+  log('  CDC weight male month 37 (interpolated near 36.5): M=' + (found36 ? found36.M : 'N/A'));
+
+  // ── 3. Vaccine Schedule ────────────────────────────────────────
+  log('\n=== Vaccine Schedule ===');
+  assert('VACCINE_SCHEDULE exists', !!window.VACCINE_SCHEDULE);
+  assert('Has 14 vaccine entries', window.VACCINE_SCHEDULE.length === 14);
+  assert('WELL_CHILD_VISITS exists', !!window.WELL_CHILD_VISITS);
+  assert('Has 30 visit entries', window.WELL_CHILD_VISITS.length === 30);
+
+  var hepB = window.VACCINE_SCHEDULE[0];
+  assert('First vaccine is HepB', hepB.id === 'HepB');
+  assert('HepB has 3 doses', hepB.totalDoses === 3);
+
+  // ── 4. GrowthCalc ─────────────────────────────────────────────
+  log('\n=== GrowthCalc ===');
+  assert('GrowthCalc exists', !!window.GrowthCalc);
+
+  // Z-score for median (should be 0)
+  var z50 = window.GrowthCalc.calculateZScore(3.3464, 0.3487, 3.3464, 0.14602);
+  assert('Z-score at median = 0', approx(z50, 0, 0.001));
+
+  // Percentile at z=0 should be 50
+  var p50 = window.GrowthCalc.zToPercentile(0);
+  assert('Percentile at z=0 = 50', approx(p50, 50, 0.1));
+
+  // Percentile at z=-1.88 ≈ 3rd
+  var p3 = window.GrowthCalc.zToPercentile(-1.88);
+  assert('Percentile at z=-1.88 ≈ 3', approx(p3, 3, 0.5));
+
+  // Inverse: percentile 50 → z=0
+  var z_from_50 = window.GrowthCalc.percentileToZ(50);
+  assert('percentileToZ(50) ≈ 0', approx(z_from_50, 0, 0.01));
+
+  // Inverse: percentile 97.7 → z ≈ 2
+  var z_from_97 = window.GrowthCalc.percentileToZ(97.725);
+  assert('percentileToZ(97.725) ≈ 2', approx(z_from_97, 2, 0.05));
+
+  // Data source selection
+  assert('Age 12 → WHO', window.GrowthCalc.selectDataSource(12) === 'WHO');
+  assert('Age 24 → CDC', window.GrowthCalc.selectDataSource(24) === 'CDC');
+  assert('Age 120 → CDC', window.GrowthCalc.selectDataSource(120) === 'CDC');
+
+  // LMS lookup with interpolation
+  var lms6 = window.GrowthCalc.lookupLMS('weight', 'male', 6);
+  assert('LMS lookup weight male 6mo: M=7.934', lms6 && approx(lms6.M, 7.934, 0.01));
+
+  // Interpolated half-month
+  var lms6_5 = window.GrowthCalc.lookupLMS('weight', 'male', 6.5);
+  assert('LMS lookup weight male 6.5mo interpolated', lms6_5 && lms6_5.M > 7.93 && lms6_5.M < 8.30);
+
+  // Age calculation
+  var age = window.GrowthCalc.calculateAge('2025-01-15', '2026-07-15');
+  assert('Age calc: 18 months', age.months === 18);
+  assert('Age calc: 0 days remainder', age.days === 0);
+
+  // Trend analysis
+  assert('Trend: 50→55 = stable', window.GrowthCalc.calculateTrend(55, 50) === 'stable');
+  assert('Trend: 50→80 = sharp_up', window.GrowthCalc.calculateTrend(80, 50) === 'sharp_up');
+  assert('Trend: 80→50 = sharp_down', window.GrowthCalc.calculateTrend(50, 80) === 'sharp_down');
+  assert('Trend: 50→60 = up', window.GrowthCalc.calculateTrend(60, 50) === 'up');
+
+  // Percentile bands
+  var bands = window.GrowthCalc.getPercentileBands('weight', 'male', 0, 24, 3);
+  assert('Bands p50 has entries', bands.p50.length > 0);
+  assert('Bands p3 first value < p50 first', bands.p3[0].value < bands.p50[0].value);
+  assert('Bands p97 first value > p50 first', bands.p97[0].value > bands.p50[0].value);
+
+  // getMeasurementFromPercentile
+  var m50 = window.GrowthCalc.getMeasurementFromPercentile('weight', 'male', 0, 0);
+  assert('Measurement at z=0 month 0 ≈ 3.3464 (median)', approx(m50, 3.3464, 0.01));
+
+  // ── 5. VaccineCalc ────────────────────────────────────────────
+  log('\n=== VaccineCalc ===');
+  assert('VaccineCalc exists', !!window.VaccineCalc);
+
+  // Test with a 6-month-old, no vaccines given
+  var dob = '2026-01-15';
+  var today = '2026-07-15';
+  var statuses = window.VaccineCalc.calculateVaccineStatus(dob, [], today);
+  assert('Status returns array', Array.isArray(statuses));
+  assert('Status has entries', statuses.length > 0);
+
+  // HepB dose 1 should be overdue for a 6-month-old with no vaccines
+  var hepB1 = statuses.find(function(s) { return s.vaccineId === 'HepB' && s.doseNumber === 1; });
+  assert('HepB dose 1 overdue at 6mo with no vaccines', hepB1 && hepB1.status === 'overdue');
+
+  // With HepB dose 1 given
+  var partialVax = [{ vaccineId: 'HepB', doseNumber: 1, dateGiven: '2026-01-16' }];
+  var statuses2 = window.VaccineCalc.calculateVaccineStatus(dob, partialVax, today);
+  var hepB1b = statuses2.find(function(s) { return s.vaccineId === 'HepB' && s.doseNumber === 1; });
+  assert('HepB dose 1 up_to_date when given', hepB1b && hepB1b.status === 'up_to_date');
+
+  // Overdue count
+  var overdue = window.VaccineCalc.getOverdueVaccines(dob, [], today);
+  assert('Overdue count > 0 for unvaccinated 6mo', overdue.overdueCount > 0);
+  log('  Overdue count: ' + overdue.overdueCount + ', Due: ' + overdue.dueCount);
+
+  // Next checkup
+  var nextVisit = window.VaccineCalc.getNextCheckup(dob, [], today);
+  assert('Next checkup returned', !!nextVisit);
+  log('  Next checkup: ' + (nextVisit ? nextVisit.label : 'none'));
+
+  // ── Summary ────────────────────────────────────────────────────
+  log('\n══════════════════════════════════');
+  log('TOTAL: ' + pass + ' passed, ' + fail + ' failed');
+  log('══════════════════════════════════');
+
+  document.getElementById('output').textContent = out.join('\n');
+})();
+</script>
+</body>
+</html>
