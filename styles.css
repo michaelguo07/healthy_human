@@ -828,6 +828,7 @@ tbody td:last-child .btn-delete:hover {
    ============================================================ */
 
 /* Mobile (<768px) */
+/* Mobile (<768px) */
 @media (max-width: 767px) {
   #app {
     padding: 0 var(--space-2);
@@ -835,34 +836,132 @@ tbody td:last-child .btn-delete:hover {
 
   #app-header {
     flex-wrap: wrap;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
     margin: 0 calc(-1 * var(--space-2));
+    background: var(--surface);
+  }
+
+  .header-left {
+    flex: 1;
   }
 
   .header-center {
     order: 3;
     flex-basis: 100%;
-    justify-content: flex-start;
     margin-top: var(--space-1);
   }
 
   .child-selector select {
     width: 100%;
+    padding: 6px 12px;
+  }
+
+  .header-right {
+    gap: 4px;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .unit-toggle {
+    padding: 2px;
+  }
+
+  .unit-btn {
+    padding: 3px 8px;
+    font-size: 0.75rem;
   }
 
   #tab-nav {
-    gap: var(--space-3);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: flex;
+    gap: var(--space-1);
+    background: var(--muted);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    margin: var(--space-2) 0 var(--space-3);
+    border: 1px solid var(--border-light);
+  }
+
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 12px;
+    border-bottom: none !important;
+    border-radius: var(--radius-sm);
+    font-size: 0.8125rem;
+    font-weight: 500;
+  }
+
+  .tab.active {
+    background: var(--surface);
+    color: var(--primary);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
   }
 
   .chart-container {
-    max-height: 40vh;
+    max-height: 35vh;
   }
 
   .metric-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: var(--space-3);
+  }
+
+  .metric-card {
+    padding: var(--space-2) 4px;
+    text-align: center;
+    border-radius: var(--radius-sm);
+  }
+
+  .metric-label {
+    font-size: 0.72rem;
+    margin-bottom: 2px;
+  }
+
+  .metric-value-container {
+    font-size: 1.1rem;
+    justify-content: center;
+    gap: 1px;
+    margin-bottom: 2px;
+  }
+
+  .metric-value {
+    font-size: 1.1rem;
+  }
+
+  .metric-unit {
+    font-size: 0.65rem;
+  }
+
+  .metric-percentile {
+    font-size: 0.68rem;
+    display: block;
+  }
+
+  .metric-trend {
+    font-size: 0.62rem;
+    padding: 2px;
+    margin-top: 4px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+  }
+
+  .metric-trend .trend-text {
+    display: none;
+  }
+
+  .metric-trend::after {
+    content: "vs last";
+    font-size: 0.6rem;
+    margin-left: 2px;
   }
 
   .form-row {
@@ -870,16 +969,29 @@ tbody td:last-child .btn-delete:hover {
     gap: var(--space-2);
   }
 
+  .form-row .form-group {
+    width: 100%;
+  }
+
+  .form-row button[type="submit"] {
+    width: 100%;
+    margin-top: var(--space-1);
+  }
+
   .section-card {
     padding: var(--space-3);
+    margin-bottom: var(--space-3);
   }
 
   .modal-card {
     padding: var(--space-3);
+    width: 95%;
+    max-width: 400px;
   }
 
   .onboarding-card {
     padding: var(--space-4);
+    width: 95%;
   }
 
   .export-option .export-desc {
