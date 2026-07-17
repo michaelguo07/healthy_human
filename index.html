@@ -52,6 +52,14 @@
           </div>
           <button type="submit" class="btn-primary">Get Started</button>
         </form>
+        <div class="onboarding-divider" style="display: flex; align-items: center; text-align: center; margin: var(--space-4) 0; color: var(--text-secondary); font-size: 0.8125rem;">
+          <span style="flex: 1; border-bottom: 1px solid var(--border);"></span>
+          <span style="padding: 0 var(--space-2);">or</span>
+          <span style="flex: 1; border-bottom: 1px solid var(--border);"></span>
+        </div>
+        <div style="text-align: center;">
+          <button type="button" class="btn-secondary" id="onboard-import-btn" style="width: 100%;">Import Profile Backup (JSON)</button>
+        </div>
       </div>
     </div>
 
@@ -72,6 +80,13 @@
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="10" y1="4" x2="10" y2="16" />
             <line x1="4" y1="10" x2="16" y2="10" />
+          </svg>
+        </button>
+        <button id="import-profile-btn" class="btn-icon" title="Import Profile Backup" aria-label="Import profile backup">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
         </button>
         <button id="delete-child-btn" class="btn-icon" title="Delete Profile" aria-label="Delete profile" style="color: var(--status-overdue)">
@@ -395,6 +410,8 @@
   <script src="components/summary.js"></script>
   <script src="components/export.js"></script>
   <script src="app.js"></script>
+
+  <input type="file" id="global-import-input" accept=".json" style="display: none;">
 
 </body>
 

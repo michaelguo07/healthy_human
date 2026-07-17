@@ -241,6 +241,36 @@ window.ChildManager = (function () {
     };
   }
 
+  function importChildData(payload) {
+    if (!payload || payload.exportFormat !== 'healthy_human_backup' || !payload.child) {
+      throw new Error('Invalid backup file format.');
+    }
+
+    var store = load();
+    var child = payload.child;
+    var childId = child.id;
+
+    if (!childId) {
+      childId = generateId();
+      child.id = childId;
+    }
+
+    var existingIndex = store.children.findIndex(function (c) { return c.id === childId; });
+    if (existingIndex !== -1) {
+      store.children[existingIndex] = child;
+    } else {
+      store.children.push(child);
+    }
+
+    store.measurements[childId] = payload.measurements || [];
+    store.vaccines[childId] = payload.vaccines || [];
+    store.checkups[childId] = payload.checkups || [];
+    store.activeChildId = childId;
+
+    save(store);
+    return child;
+  }
+
   // ───────────────── settings helpers ─────────────────
 
   function getSettings() {
@@ -271,6 +301,7 @@ window.ChildManager = (function () {
     saveCheckup: saveCheckup,
     deleteCheckup: deleteCheckup,
     exportAllData: exportAllData,
+    importChildData: importChildData,
     getSettings: getSettings,
     saveSettings: saveSettings
   };

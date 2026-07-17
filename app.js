@@ -38,6 +38,7 @@
     bindModalEvents();
     bindUnitToggle();
     bindExportEvents();
+    bindImportEvents();
     bindChildSelector();
     bindChartControls();
   }
@@ -834,6 +835,53 @@
         var data = ChildManager.getChildData(child.id);
         ExportManager.exportJSON(data, child);
         showToast('JSON backup downloaded!');
+      });
+    }
+  }
+
+  // ─────────────────── Import Events ───────────────────
+
+  function bindImportEvents() {
+    var globalInput = document.getElementById('global-import-input');
+    var onboardBtn = document.getElementById('onboard-import-btn');
+    var headerBtn = document.getElementById('import-profile-btn');
+
+    if (onboardBtn && globalInput) {
+      onboardBtn.addEventListener('click', function () {
+        globalInput.click();
+      });
+    }
+
+    if (headerBtn && globalInput) {
+      headerBtn.addEventListener('click', function () {
+        globalInput.click();
+      });
+    }
+
+    if (globalInput) {
+      globalInput.addEventListener('change', function (e) {
+        var file = e.target.files[0];
+        if (!file) return;
+
+        var reader = new FileReader();
+        reader.onload = function (evt) {
+          try {
+            var payload = JSON.parse(evt.target.result);
+            var child = ChildManager.importChildData(payload);
+            
+            globalInput.value = '';
+            showToast('Imported ' + child.name + '\'s profile successfully!');
+            hideOnboarding();
+            
+            // Re-render
+            renderApp();
+          } catch (err) {
+            console.error('Import error:', err);
+            alert('Error importing profile: ' + err.message);
+            globalInput.value = '';
+          }
+        };
+        reader.readAsText(file);
       });
     }
   }
