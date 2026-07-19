@@ -236,6 +236,7 @@ window.GrowthChart = (function () {
         borderWidth: 1.5,
         borderDash: [6, 4],
         pointRadius: 0,
+        pointHitRadius: 10,
         fill: { target: 1, above: BAND_COLORS.inner },
         tension: 0.3,
         order: 5
@@ -357,9 +358,11 @@ window.GrowthChart = (function () {
 
               var tooltipModel = context.tooltip;
               var dataPoints = tooltipModel.dataPoints || [];
-              var babyPoint = dataPoints.find(function (dp) { return dp.datasetIndex === 5; });
+              var activePoint = dataPoints.find(function (dp) {
+                return dp.datasetIndex === 5 || dp.datasetIndex === 2;
+              });
 
-              if (!babyPoint || tooltipModel.opacity === 0) {
+              if (!activePoint || tooltipModel.opacity === 0) {
                 if (mouseInTooltip) {
                   return; // Stay open!
                 }
@@ -373,45 +376,50 @@ window.GrowthChart = (function () {
               clearTimeout(hideTimeout);
 
               if (tooltipModel.body) {
-                var titleLines = tooltipModel.title || [];
-                var raw = babyPoint.raw;
-                var measurementId = raw ? raw.id : null;
+                var raw = activePoint.raw;
+                var isBaby = activePoint.datasetIndex === 5;
+                var isAverage = activePoint.datasetIndex === 2;
+                var measurementId = isBaby && raw ? raw.id : null;
 
                 var html = '';
-                if (titleLines.length > 0) {
-                  html += '<div class="tooltip-title">' + titleLines[0] + '</div>';
+                if (isAverage) {
+                  html += '<div class="tooltip-title">50th Percentile (Average)</div>';
+                } else if (tooltipModel.title && tooltipModel.title.length > 0) {
+                  html += '<div class="tooltip-title">' + tooltipModel.title[0] + '</div>';
                 }
-                
+
                 var ageStr = formatAge(raw.x);
                 var unitStr = metric.indexOf('weight') !== -1 ? (isImperial ? 'lb' : 'kg') : (isImperial ? 'in' : 'cm');
                 var metricName = metricLabel(metric, units).split('(')[0].trim();
                 var valStr = raw.y + ' ' + unitStr;
-                
-                var pctStr = '—';
-                try {
-                  var rawY = raw.y;
-                  if (isImperial) {
-                    if (metric.indexOf('weight') !== -1) {
-                      rawY = raw.y / KG_TO_LB;
-                    } else {
-                      rawY = raw.y / CM_TO_IN;
+
+                var pctStr = isAverage ? '50th (Average)' : '—';
+                if (!isAverage) {
+                  try {
+                    var rawY = raw.y;
+                    if (isImperial) {
+                      if (metric.indexOf('weight') !== -1) {
+                        rawY = raw.y / KG_TO_LB;
+                      } else {
+                        rawY = raw.y / CM_TO_IN;
+                      }
                     }
-                  }
-                  var lms = GrowthCalc.lookupLMS(metric, sex, raw.x);
-                  if (lms) {
-                    var z = GrowthCalc.calculateZScore(rawY, lms.L, lms.M, lms.S);
-                    var pct = GrowthCalc.zScoreToPercentile(z);
-                    pctStr = ordinal(pct);
-                  }
-                } catch(e) {}
+                    var lms = GrowthCalc.lookupLMS(metric, sex, raw.x);
+                    if (lms) {
+                      var z = GrowthCalc.calculateZScore(rawY, lms.L, lms.M, lms.S);
+                      var pct = GrowthCalc.zScoreToPercentile(z);
+                      pctStr = ordinal(pct);
+                    }
+                  } catch(e) {}
+                }
 
                 html += '<div class="tooltip-body">';
                 html += '<div><span class="tooltip-label">Age:</span> ' + ageStr + '</div>';
-                html += '<div><span class="tooltip-label">' + metricName + ':</span> ' + valStr + '</div>';
+                html += '<div><span class="tooltip-label">' + (isAverage ? 'Avg ' + metricName : metricName) + ':</span> ' + valStr + '</div>';
                 html += '<div><span class="tooltip-label">Percentile:</span> ' + pctStr + '</div>';
                 html += '</div>';
 
-                if (measurementId) {
+                if (isBaby && measurementId) {
                   html += '<div class="tooltip-actions">';
                   html += '<button type="button" class="tooltip-btn tooltip-btn--edit" data-id="' + measurementId + '">';
                   html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> Edit</button>';
