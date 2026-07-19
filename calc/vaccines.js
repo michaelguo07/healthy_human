@@ -101,6 +101,7 @@
           results.push({
             vaccineId: vaccine.id,
             vaccineName: vaccine.name,
+            shortName: vaccine.shortName,
             doseNumber: 1,
             status: fluStatus,
             ageIdealMonths: 6,
@@ -143,6 +144,7 @@
           results.push({
             vaccineId: vaccine.id,
             vaccineName: vaccine.name,
+            shortName: vaccine.shortName,
             doseNumber: dose.doseNumber,
             status: status,
             ageIdealMonths: dose.ageIdealMonths,
@@ -239,6 +241,7 @@
             overdueVaccines.push({
               vaccineId: s.vaccineId,
               vaccineName: s.vaccineName,
+              shortName: s.shortName,
               doseNumber: s.doseNumber
             });
             break;

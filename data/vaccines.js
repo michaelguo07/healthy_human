@@ -19,6 +19,18 @@
 
 window.VACCINE_SCHEDULE = [
 
+  // ── RSV Monoclonal Antibody (RSV-mAb) ────────────────────────────
+  {
+    id: 'RSV-mAb',
+    name: 'RSV Monoclonal Antibody',
+    shortName: 'RSV-mAb [Nirsevimab]',
+    totalDoses: 1,
+    doses: [
+      { doseNumber: 1, ageIdealMonths: 8,   ageMinMonths: 0,   ageMaxMonths: 19  }
+    ],
+    notes: '1 dose (8 through 19 months) depending on maternal RSV vaccination status.'
+  },
+
   // ── Hepatitis B (HepB) — 3-dose series ────────────────────────────
   {
     id: 'HepB',
@@ -32,11 +44,11 @@ window.VACCINE_SCHEDULE = [
     ]
   },
 
-  // ── Rotavirus (RV) — 3-dose series ────────────────────────────────
+  // ── Rotavirus (Rota) — 3-dose series ────────────────────────────────
   {
     id: 'RV',
     name: 'Rotavirus',
-    shortName: 'RV',
+    shortName: 'Rota',
     totalDoses: 3,
     doses: [
       { doseNumber: 1, ageIdealMonths: 2,   ageMinMonths: 1.5, ageMaxMonths: 3.5 },
@@ -75,11 +87,11 @@ window.VACCINE_SCHEDULE = [
     ]
   },
 
-  // ── Pneumococcal Conjugate (PCV15) — 4-dose series ─────────────────
+  // ── Pneumococcal Conjugate (PCV15, PCV20) — 4-dose series ─────────
   {
     id: 'PCV15',
     name: 'Pneumococcal Conjugate',
-    shortName: 'PCV15',
+    shortName: 'PCV15, PCV20',
     totalDoses: 4,
     doses: [
       { doseNumber: 1, ageIdealMonths: 2,   ageMinMonths: 1.5, ageMaxMonths: 3.5 },
@@ -103,6 +115,18 @@ window.VACCINE_SCHEDULE = [
     ]
   },
 
+  // ── COVID-19 ───────────────────────────────────────────────────────
+  {
+    id: 'COVID19',
+    name: 'COVID-19 Vaccine',
+    shortName: 'COVID-19',
+    totalDoses: null,
+    doses: [
+      { doseNumber: 1, ageIdealMonths: 6,   ageMinMonths: 6,   ageMaxMonths: null }
+    ],
+    notes: 'Recommended starting at 6 months of age.'
+  },
+
   // ── Influenza — annual from 6 months ───────────────────────────────
   {
     id: 'Influenza',
@@ -112,7 +136,7 @@ window.VACCINE_SCHEDULE = [
     doses: [
       { doseNumber: 1, ageIdealMonths: 6,   ageMinMonths: 6,   ageMaxMonths: null }
     ],
-    notes: 'Annual vaccination recommended starting at 6 months. Children 6 months through 8 years receiving influenza vaccine for the first time need 2 doses separated by ≥4 weeks.'
+    notes: 'Annual vaccination recommended starting at 6 months (IIV3, ccIIV3, or LAIV3).'
   },
 
   // ── Measles, Mumps, Rubella (MMR) — 2-dose series ─────────────────

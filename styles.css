@@ -625,6 +625,22 @@ tbody td:last-child .btn-delete:hover {
   background: var(--status-upcoming-bg);
 }
 
+/* Vaccine abbreviation badge */
+.vax-abbrev {
+  display: inline-block;
+  font-family: var(--font-data);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--primary-dark);
+  background: var(--status-good-bg);
+  border: 1px solid var(--secondary-light);
+  border-radius: var(--radius-sm);
+  padding: 1px 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.02em;
+}
+
 /* Empty state */
 .empty-state {
   text-align: center;

@@ -156,10 +156,13 @@ window.VaccineTable = (function () {
       var doseLabel = (dose && dose.label) || ('Dose ' + s.doseNumber);
       if (s.vaccineId === 'Influenza') doseLabel = 'Annual';
 
+      var shortName = s.shortName || (vax ? vax.shortName : '');
+
       return {
         vaccineId: s.vaccineId,
         doseNumber: s.doseNumber,
         name: s.vaccineName,
+        shortName: shortName,
         doseLabel: doseLabel,
         status: s.status,
         dateStr: dateStr,
@@ -202,18 +205,24 @@ window.VaccineTable = (function () {
       if (r.status === 'up_to_date') statusClass = 'good'; // matches styles.css classes
       if (r.status === 'not_yet') statusClass = 'upcoming';
 
+      var nameHtml = '<strong>' + r.name + '</strong>';
+      if (r.shortName) {
+        nameHtml += ' <span class="vax-abbrev">' + r.shortName + '</span>';
+      }
+
       return (
         '<tr class="vaccine-row vaccine-row--' + r.status + ' clickable-vax-row" ' +
           'data-vaccine-id="' + r.vaccineId + '" ' +
           'data-dose-number="' + r.doseNumber + '" ' +
           'data-vaccine-name="' + r.name + '" ' +
+          'data-short-name="' + r.shortName + '" ' +
           'data-dose-label="' + r.doseLabel + '" ' +
           'data-status="' + r.status + '" ' +
           'data-date-str="' + r.dateStr + '" ' +
           'data-raw-date="' + r.rawDateGiven + '" ' +
           'data-logged-id="' + r.loggedId + '" ' +
           'style="cursor: pointer;" title="Click to view details or log vaccine">' +
-          '<td>' + r.name + '</td>' +
+          '<td>' + nameHtml + '</td>' +
           '<td>' + r.doseLabel + '</td>' +
           '<td>' + statusPill(statusClass) + '</td>' +
           '<td>' + r.dateStr + '</td>' +
@@ -231,6 +240,7 @@ window.VaccineTable = (function () {
             vaccineId: this.getAttribute('data-vaccine-id'),
             doseNumber: this.getAttribute('data-dose-number'),
             vaccineName: this.getAttribute('data-vaccine-name'),
+            shortName: this.getAttribute('data-short-name'),
             doseLabel: this.getAttribute('data-dose-label'),
             status: this.getAttribute('data-status'),
             dateStr: this.getAttribute('data-date-str'),
@@ -250,9 +260,10 @@ window.VaccineTable = (function () {
 
     window.VACCINE_SCHEDULE.forEach(function (vax) {
       var name = vax.name || vax.vaccine;
+      var shortName = vax.shortName;
       var opt = document.createElement('option');
       opt.value = name;
-      opt.textContent = name;
+      opt.textContent = shortName && shortName !== name ? name + ' (' + shortName + ')' : name;
       selectEl.appendChild(opt);
     });
   }

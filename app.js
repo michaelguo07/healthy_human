@@ -655,13 +655,15 @@
     doseInput.value = details.doseNumber;
     logIdInput.value = details.loggedId || '';
 
-    titleEl.textContent = details.vaccineName + ' — ' + details.doseLabel;
+    var shortName = details.shortName || '';
+    var displayTitle = details.vaccineName + (shortName ? ' (' + shortName + ')' : '');
+    titleEl.textContent = displayTitle + ' — ' + details.doseLabel;
 
     var statusLabel = details.status === 'up_to_date' ? 'Up to date' : details.status === 'due' ? 'Due now' : details.status === 'overdue' ? 'Overdue' : 'Upcoming';
     var pillClass = details.status === 'up_to_date' ? 'good' : details.status === 'not_yet' ? 'upcoming' : details.status;
 
     var infoHtml = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
-      '<strong>' + details.vaccineName + '</strong>' +
+      '<div><strong>' + details.vaccineName + '</strong>' + (shortName ? ' <span class="vax-abbrev">' + shortName + '</span>' : '') + '</div>' +
       '<span class="status-pill ' + pillClass + '">' + statusLabel + '</span>' +
       '</div>';
 

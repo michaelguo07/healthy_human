@@ -60,13 +60,13 @@
   // ── 3. Vaccine Schedule ────────────────────────────────────────
   log('\n=== Vaccine Schedule ===');
   assert('VACCINE_SCHEDULE exists', !!window.VACCINE_SCHEDULE);
-  assert('Has 14 vaccine entries', window.VACCINE_SCHEDULE.length === 14);
+  assert('Has 16 vaccine entries', window.VACCINE_SCHEDULE.length === 16);
   assert('WELL_CHILD_VISITS exists', !!window.WELL_CHILD_VISITS);
   assert('Has 30 visit entries', window.WELL_CHILD_VISITS.length === 30);
 
-  var hepB = window.VACCINE_SCHEDULE[0];
-  assert('First vaccine is HepB', hepB.id === 'HepB');
-  assert('HepB has 3 doses', hepB.totalDoses === 3);
+  var hepB = window.VACCINE_SCHEDULE.find(function(v) { return v.id === 'HepB'; });
+  assert('HepB vaccine exists in schedule', !!hepB);
+  assert('HepB has 3 doses', hepB && hepB.totalDoses === 3);
 
   // ── 4. GrowthCalc ─────────────────────────────────────────────
   log('\n=== GrowthCalc ===');

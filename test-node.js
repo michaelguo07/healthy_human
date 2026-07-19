@@ -130,7 +130,7 @@ assert('p3 < p50 < p97', bands.p3[0].value < bands.p50[0].value && bands.p50[0].
 // === Vaccine Schedule ===
 console.log('\n=== Vaccine Schedule ===');
 assert('VACCINE_SCHEDULE exists', !!VS);
-assert('14 vaccines', VS.length === 14);
+assert('16 vaccines', VS.length === 16);
 assert('WELL_CHILD_VISITS exists', !!WCV);
 assert('30 visits', WCV.length === 30);
 
