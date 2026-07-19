@@ -636,6 +636,53 @@
 
   // ─────────────────── Modal Events ───────────────────
 
+  window.openVaccineModal = function (details) {
+    var modal = document.getElementById('vaccine-modal');
+    if (!modal) return;
+
+    var titleEl = document.getElementById('vax-modal-title');
+    var infoEl = document.getElementById('vax-modal-info');
+    var nameInput = document.getElementById('vax-modal-name');
+    var doseInput = document.getElementById('vax-modal-dose');
+    var logIdInput = document.getElementById('vax-modal-log-id');
+    var dateInput = document.getElementById('vax-modal-date');
+    var deleteBtn = document.getElementById('delete-vax-log');
+    var saveBtn = document.getElementById('save-vax-log');
+
+    if (!titleEl || !infoEl) return;
+
+    nameInput.value = details.vaccineId || details.vaccineName;
+    doseInput.value = details.doseNumber;
+    logIdInput.value = details.loggedId || '';
+
+    titleEl.textContent = details.vaccineName + ' — ' + details.doseLabel;
+
+    var statusLabel = details.status === 'up_to_date' ? 'Up to date' : details.status === 'due' ? 'Due now' : details.status === 'overdue' ? 'Overdue' : 'Upcoming';
+    var pillClass = details.status === 'up_to_date' ? 'good' : details.status === 'not_yet' ? 'upcoming' : details.status;
+
+    var infoHtml = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+      '<strong>' + details.vaccineName + '</strong>' +
+      '<span class="status-pill ' + pillClass + '">' + statusLabel + '</span>' +
+      '</div>';
+
+    infoHtml += '<div style="margin-bottom:4px;"><strong>Dose Progress:</strong> ' + details.doseLabel + '</div>';
+    infoHtml += '<div style="margin-bottom:4px;"><strong>Schedule Status:</strong> ' + details.dateStr + '</div>';
+
+    if (details.loggedId && details.rawDate) {
+      infoHtml += '<div><strong>Recorded Given Date:</strong> ' + formatDateShort(details.rawDate) + '</div>';
+      dateInput.value = details.rawDate;
+      if (deleteBtn) deleteBtn.style.display = 'inline-block';
+      if (saveBtn) saveBtn.textContent = 'Update Log';
+    } else {
+      dateInput.value = todayISO();
+      if (deleteBtn) deleteBtn.style.display = 'none';
+      if (saveBtn) saveBtn.textContent = 'Save Log';
+    }
+
+    infoEl.innerHTML = infoHtml;
+    openModal(modal);
+  };
+
   function bindModalEvents() {
     // Add child modal
     var addChildBtn = document.getElementById('add-child-btn');
@@ -704,6 +751,63 @@
     if (cancelExport && exportModal) {
       cancelExport.addEventListener('click', function () {
         closeModal(exportModal);
+      });
+    }
+
+    // Vaccine modal
+    var vaxModal = document.getElementById('vaccine-modal');
+    var cancelVax = document.getElementById('cancel-vax-modal');
+    var vaxForm = document.getElementById('vax-modal-form');
+    var deleteVaxBtn = document.getElementById('delete-vax-log');
+
+    if (cancelVax && vaxModal) {
+      cancelVax.addEventListener('click', function () {
+        closeModal(vaxModal);
+      });
+    }
+
+    if (vaxForm) {
+      vaxForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var child = ChildManager.getActiveChild();
+        if (!child) return;
+
+        var vaxName = document.getElementById('vax-modal-name').value;
+        var doseNum = document.getElementById('vax-modal-dose').value;
+        var dateGiven = document.getElementById('vax-modal-date').value;
+        var loggedId = document.getElementById('vax-modal-log-id').value;
+
+        if (!vaxName || !doseNum || !dateGiven) return;
+
+        if (loggedId) {
+          ChildManager.deleteVaccine(child.id, loggedId);
+        }
+
+        ChildManager.saveVaccine(child.id, {
+          vaccineId: vaxName,
+          vaccineName: vaxName,
+          doseNumber: Number(doseNum),
+          dateGiven: dateGiven
+        });
+
+        closeModal(vaxModal);
+        showToast('Vaccine log saved!');
+        renderApp();
+      });
+    }
+
+    if (deleteVaxBtn) {
+      deleteVaxBtn.addEventListener('click', function () {
+        var child = ChildManager.getActiveChild();
+        var loggedId = document.getElementById('vax-modal-log-id').value;
+        if (!child || !loggedId) return;
+
+        if (confirm('Remove this recorded vaccine log?')) {
+          ChildManager.deleteVaccine(child.id, loggedId);
+          closeModal(vaxModal);
+          showToast('Vaccine log removed!');
+          renderApp();
+        }
       });
     }
 

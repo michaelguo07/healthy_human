@@ -1164,32 +1164,36 @@ tbody td:last-child .btn-delete:hover {
 
 /* ===== Custom Chart Tooltip ===== */
 .custom-chart-tooltip {
-  background: rgba(255, 255, 255, 0.98);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  box-shadow: var(--shadow-md);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  box-shadow: var(--shadow-sm);
   font-family: var(--font-ui);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--ink);
-  min-width: 170px;
+  min-width: 125px;
+  max-width: 160px;
   z-index: 1000;
   pointer-events: none;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.1s ease-out;
   opacity: 0;
 }
 
 .custom-chart-tooltip .tooltip-title {
   font-weight: 600;
-  margin-bottom: var(--space-1);
+  margin-bottom: 2px;
   color: var(--ink);
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .custom-chart-tooltip .tooltip-body {
   font-family: var(--font-data);
-  line-height: 1.4;
-  margin-bottom: var(--space-2);
+  line-height: 1.35;
+  font-size: 0.72rem;
+  margin-bottom: 4px;
 }
 
 .custom-chart-tooltip .tooltip-label {
@@ -1199,24 +1203,24 @@ tbody td:last-child .btn-delete:hover {
 
 .custom-chart-tooltip .tooltip-actions {
   display: flex;
-  gap: var(--space-2);
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-2);
-  margin-top: var(--space-2);
+  gap: 4px;
+  border-top: 1px solid var(--border-light);
+  padding-top: 4px;
+  margin-top: 4px;
 }
 
 .custom-chart-tooltip .tooltip-btn {
   flex: 1;
-  padding: 6px var(--space-2);
-  font-size: 0.75rem;
+  padding: 3px 6px;
+  font-size: 0.68rem;
   font-weight: 500;
   border: none;
-  border-radius: var(--radius-sm);
+  border-radius: 3px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   color: var(--surface);
   transition: background 0.1s;
 }

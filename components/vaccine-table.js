@@ -126,11 +126,17 @@ window.VaccineTable = (function () {
       var vax = window.VACCINE_SCHEDULE.find(function (v) { return v.id === s.vaccineId; });
       var dose = vax ? vax.doses.find(function (d) { return d.doseNumber === s.doseNumber; }) : null;
 
+      var vaxLog = vaccines.find(function (v) {
+        return (v.vaccineId === s.vaccineId || v.vaccineName === s.vaccineName) && Number(v.doseNumber) === Number(s.doseNumber);
+      });
+      var loggedId = vaxLog ? vaxLog.id : '';
+      var rawDateGiven = s.dateGiven || (vaxLog ? vaxLog.dateGiven : '');
+
       var dateStr = '';
       var dateObj = null;
-      if (s.status === 'up_to_date' && s.dateGiven) {
-        dateStr = formatDate(s.dateGiven);
-        dateObj = new Date(s.dateGiven + 'T00:00:00');
+      if (s.status === 'up_to_date' && rawDateGiven) {
+        dateStr = formatDate(rawDateGiven);
+        dateObj = new Date(rawDateGiven + 'T00:00:00');
       } else if (s.status === 'overdue' && s.ageMaxMonths != null) {
         var dueBy = addMonthsToDate(dob, s.ageMaxMonths);
         dateStr = 'Was due ' + formatDate(dueBy);
@@ -151,11 +157,15 @@ window.VaccineTable = (function () {
       if (s.vaccineId === 'Influenza') doseLabel = 'Annual';
 
       return {
+        vaccineId: s.vaccineId,
+        doseNumber: s.doseNumber,
         name: s.vaccineName,
         doseLabel: doseLabel,
         status: s.status,
         dateStr: dateStr,
         dateObj: dateObj,
+        rawDateGiven: rawDateGiven,
+        loggedId: loggedId,
         sortKey: (STATUS_ORDER[s.status] != null ? STATUS_ORDER[s.status] : 9)
       };
     });
@@ -193,7 +203,16 @@ window.VaccineTable = (function () {
       if (r.status === 'not_yet') statusClass = 'upcoming';
 
       return (
-        '<tr class="vaccine-row vaccine-row--' + r.status + '">' +
+        '<tr class="vaccine-row vaccine-row--' + r.status + ' clickable-vax-row" ' +
+          'data-vaccine-id="' + r.vaccineId + '" ' +
+          'data-dose-number="' + r.doseNumber + '" ' +
+          'data-vaccine-name="' + r.name + '" ' +
+          'data-dose-label="' + r.doseLabel + '" ' +
+          'data-status="' + r.status + '" ' +
+          'data-date-str="' + r.dateStr + '" ' +
+          'data-raw-date="' + r.rawDateGiven + '" ' +
+          'data-logged-id="' + r.loggedId + '" ' +
+          'style="cursor: pointer;" title="Click to view details or log vaccine">' +
           '<td>' + r.name + '</td>' +
           '<td>' + r.doseLabel + '</td>' +
           '<td>' + statusPill(statusClass) + '</td>' +
@@ -203,6 +222,24 @@ window.VaccineTable = (function () {
     }).join('');
 
     tbody.innerHTML = html;
+
+    // Bind row clicks
+    tbody.querySelectorAll('.clickable-vax-row').forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        if (typeof window.openVaccineModal === 'function') {
+          window.openVaccineModal({
+            vaccineId: this.getAttribute('data-vaccine-id'),
+            doseNumber: this.getAttribute('data-dose-number'),
+            vaccineName: this.getAttribute('data-vaccine-name'),
+            doseLabel: this.getAttribute('data-dose-label'),
+            status: this.getAttribute('data-status'),
+            dateStr: this.getAttribute('data-date-str'),
+            rawDate: this.getAttribute('data-raw-date'),
+            loggedId: this.getAttribute('data-logged-id')
+          });
+        }
+      });
+    });
   }
 
   function populateVaccineSelect(selectEl) {

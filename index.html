@@ -385,6 +385,31 @@
       </div>
     </div>
 
+    <!-- ===== Vaccine Log & Detail Modal ===== -->
+    <div id="vaccine-modal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-card">
+        <h2 id="vax-modal-title">Vaccine Details</h2>
+        <div id="vax-modal-info" class="vax-info-box" style="margin-bottom: var(--space-3); padding: var(--space-3); background: var(--muted); border-radius: var(--radius-sm); font-size: 0.875rem;">
+          <!-- Populated by JS: Status, Last given date, Recommended age, Dose info -->
+        </div>
+        <form id="vax-modal-form">
+          <input type="hidden" id="vax-modal-name">
+          <input type="hidden" id="vax-modal-dose">
+          <input type="hidden" id="vax-modal-log-id">
+          <div class="form-group">
+            <label for="vax-modal-date">Date Given</label>
+            <input type="date" id="vax-modal-date" required>
+          </div>
+          <div class="modal-actions" style="display: flex; gap: var(--space-2); justify-content: flex-end; margin-top: var(--space-4);">
+            <button type="button" class="btn-secondary" id="cancel-vax-modal">Close</button>
+            <button type="button" class="btn-secondary" id="delete-vax-log" style="color: var(--status-overdue); display: none;">Remove Log</button>
+            <button type="submit" class="btn-primary" id="save-vax-log">Save Log</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- ===== Footer ===== -->
     <footer id="app-footer">
       <p class="disclaimer">This tool tracks and compares data using standardized references — it does not provide

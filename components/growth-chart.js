@@ -364,7 +364,7 @@ window.GrowthChart = (function () {
                 clearTimeout(hideTimeout);
                 hideTimeout = setTimeout(function () {
                   hideTooltip();
-                }, 400);
+                }, 150);
                 return;
               }
               
