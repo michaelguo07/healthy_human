@@ -272,6 +272,7 @@ window.GrowthChart = (function () {
         backgroundColor: LINE_COLORS.baby,
         borderWidth: 2.5,
         pointRadius: 4,
+        pointHitRadius: 10,
         pointBackgroundColor: '#fff',
         pointBorderColor: LINE_COLORS.baby,
         pointBorderWidth: 2,
@@ -329,8 +330,7 @@ window.GrowthChart = (function () {
         },
         interaction: {
           mode: 'nearest',
-          axis: 'x',
-          intersect: false
+          intersect: true
         },
         plugins: {
           legend: { display: false },
@@ -356,8 +356,10 @@ window.GrowthChart = (function () {
               }
 
               var tooltipModel = context.tooltip;
+              var dataPoints = tooltipModel.dataPoints || [];
+              var babyPoint = dataPoints.find(function (dp) { return dp.datasetIndex === 5; });
 
-              if (tooltipModel.opacity === 0) {
+              if (!babyPoint || tooltipModel.opacity === 0) {
                 if (mouseInTooltip) {
                   return; // Stay open!
                 }
@@ -372,9 +374,8 @@ window.GrowthChart = (function () {
 
               if (tooltipModel.body) {
                 var titleLines = tooltipModel.title || [];
-                var dataPoint = tooltipModel.dataPoints[0];
-                var raw = dataPoint.raw;
-                var measurementId = raw.id;
+                var raw = babyPoint.raw;
+                var measurementId = raw ? raw.id : null;
 
                 var html = '';
                 if (titleLines.length > 0) {
@@ -410,7 +411,7 @@ window.GrowthChart = (function () {
                 html += '<div><span class="tooltip-label">Percentile:</span> ' + pctStr + '</div>';
                 html += '</div>';
 
-                if (dataPoint.datasetIndex === 5 && measurementId) {
+                if (measurementId) {
                   html += '<div class="tooltip-actions">';
                   html += '<button type="button" class="tooltip-btn tooltip-btn--edit" data-id="' + measurementId + '">';
                   html += '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg> Edit</button>';
