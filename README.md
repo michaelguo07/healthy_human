@@ -87,6 +87,9 @@ Open `test.html` in your web browser to execute and view all test assertions.
 
 All profile records and growth data reside exclusively in local browser storage (`localStorage`). No personal information or measurements are sent to external servers.
 
-## License
+## Copyright & License
 
-MIT
+Copyright (c) 2026 Michael Guo. All Rights Reserved.
+
+This software and associated documentation files are proprietary and confidential. Unauthorized copying, distribution, modification, or commercial use of this file, via any medium, is strictly prohibited.
+
