@@ -36,7 +36,7 @@ window.MetricCards = (function () {
   }
 
   function buildCard(label, value, unit, percentile, trend, date, isAlert) {
-    var alertCls = isAlert ? ' metric-card--alert' : '';
+    var alertCls = isAlert ? ' alert-flag' : '';
     var pctStr = percentile != null ? ordinal(percentile) + ' percentile' : '—';
     var trendHtml = '';
     if (trend) {
@@ -48,14 +48,18 @@ window.MetricCards = (function () {
     }
     return (
       '<div class="metric-card' + alertCls + '">' +
-        '<div class="metric-label">' + label.toUpperCase() + '</div>' +
-        '<div class="metric-value">' +
-          (value != null ? value : '—') +
-          (value != null ? ' <span class="metric-unit">' + unit + '</span>' : '') +
+        '<div class="metric-header">' +
+          '<span class="metric-label">' + label.toUpperCase() + '</span>' +
+          '<span class="metric-updated">Updated ' + formatDate(date) + '</span>' +
         '</div>' +
-        '<div class="metric-percentile">' + pctStr + '</div>' +
-        trendHtml +
-        '<div class="metric-updated">Updated ' + formatDate(date) + '</div>' +
+        '<div class="metric-value-container">' +
+          '<span class="metric-value">' + (value != null ? value : '—') + '</span>' +
+          (value != null ? '<span class="metric-unit">' + unit + '</span>' : '') +
+        '</div>' +
+        '<div class="metric-meta-row">' +
+          '<div class="metric-percentile">' + pctStr + '</div>' +
+          trendHtml +
+        '</div>' +
       '</div>'
     );
   }
