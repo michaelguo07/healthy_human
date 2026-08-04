@@ -224,8 +224,7 @@ window.ExportManager = (function () {
 
     if (!jsPDFConstructor) {
       console.error('jsPDF library not loaded.');
-      alert('PDF generation library is still loading or blocked. Please refresh the page and try again.');
-      return;
+      throw new Error('PDF generation library is still loading or blocked. Please refresh the page and try again.');
     }
 
     var doc = new jsPDFConstructor('l', 'mm', 'a4'); // landscape A4: 297mm x 210mm
@@ -496,6 +495,28 @@ window.ExportManager = (function () {
     var jsonStr = JSON.stringify(bundle, null, 2);
     var blob = new Blob([jsonStr], { type: 'application/fhir+json;charset=utf-8;' });
     var filename = 'healthy_human_fhir_r4_' + (child.name || 'patient').replace(/\s+/g, '_').toLowerCase() + '_' + todayISO() + '.json';
+    downloadBlob(blob, filename);
+  }
+
+  // ─────────────────── JSON Backup ───────────────────
+
+  function exportJSON(childData, child) {
+    if (!child) {
+      throw new Error('No child profile selected for export.');
+    }
+    childData = childData || {};
+    var payload = {
+      exportFormat: 'healthy_human_backup',
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      child: child,
+      measurements: childData.measurements || [],
+      vaccines: childData.vaccines || [],
+      checkups: childData.checkups || []
+    };
+    var jsonStr = JSON.stringify(payload, null, 2);
+    var blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+    var filename = 'healthy_human_backup_' + (child.name || 'backup').replace(/\s+/g, '_').toLowerCase() + '_' + todayISO() + '.json';
     downloadBlob(blob, filename);
   }
 

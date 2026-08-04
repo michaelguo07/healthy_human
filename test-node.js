@@ -5,8 +5,42 @@ var fs = require('fs');
 var path = require('path');
 var vm = require('vm');
 
-var window = {};
-var context = vm.createContext({ window: window, Math: Math, console: console, Date: Date, Array: Array, Infinity: Infinity, Error: Error });
+var lastDownloadedBlob = null;
+var lastDownloadedFilename = null;
+
+var mockWindow = {};
+
+var context = vm.createContext({
+  window: mockWindow,
+  Math: Math,
+  console: console,
+  Date: Date,
+  Array: Array,
+  Infinity: Infinity,
+  Error: Error,
+  JSON: JSON,
+  RegExp: RegExp,
+  isNaN: isNaN,
+  isFinite: isFinite,
+  Number: Number,
+  String: String,
+  setTimeout: setTimeout,
+  clearTimeout: clearTimeout,
+  Blob: function (content, opts) { this.content = content; this.opts = opts; },
+  URL: { createObjectURL: function (blob) { return 'blob:mock'; }, revokeObjectURL: function () {} },
+  document: {
+    createElement: function (tag) {
+      return {
+        style: {},
+        appendChild: function () {},
+        click: function () {},
+        parentNode: { removeChild: function () {} }
+      };
+    },
+    body: { appendChild: function () {} }
+  }
+});
+
 
 var base = __dirname;
 var files = [
@@ -14,7 +48,8 @@ var files = [
   'data/cdc-lms.js',
   'data/vaccines.js',
   'calc/growth.js',
-  'calc/vaccines.js'
+  'calc/vaccines.js',
+  'components/export.js'
 ];
 
 // Load all files
@@ -40,12 +75,12 @@ function assert(label, cond) {
 }
 function approx(a, b, tol) { return Math.abs(a - b) < (tol || 0.01); }
 
-var WHO = window.WHO_LMS;
-var CDC = window.CDC_LMS;
-var GC  = window.GrowthCalc;
-var VC  = window.VaccineCalc;
-var VS  = window.VACCINE_SCHEDULE;
-var WCV = window.WELL_CHILD_VISITS;
+var WHO = mockWindow.WHO_LMS;
+var CDC = mockWindow.CDC_LMS;
+var GC  = mockWindow.GrowthCalc;
+var VC  = mockWindow.VaccineCalc;
+var VS  = mockWindow.VACCINE_SCHEDULE;
+var WCV = mockWindow.WELL_CHILD_VISITS;
 
 // === WHO ===
 console.log('\n=== WHO LMS ===');
@@ -152,6 +187,40 @@ console.log('  Overdue: ' + overdue.overdueCount + ', Due: ' + overdue.dueCount 
 var next = VC.getNextCheckup('2026-01-15', [], '2026-07-15');
 assert('Next checkup exists', !!next);
 console.log('  Next checkup: ' + (next ? next.label : 'none'));
+
+// === ExportManager ===
+console.log('\n=== ExportManager ===');
+var EM = mockWindow.ExportManager;
+assert('ExportManager exists', !!EM);
+assert('exportJSON function defined', typeof EM.exportJSON === 'function');
+assert('exportCSV function defined', typeof EM.exportCSV === 'function');
+assert('exportPDF function defined', typeof EM.exportPDF === 'function');
+assert('exportEHR function defined', typeof EM.exportEHR === 'function');
+
+// Test exportJSON execution
+var testChild = { id: 'c1', name: 'Baby Alex', sex: 'female', dob: '2025-01-01' };
+var testData = { measurements: [{ date: '2025-06-01', weight_kg: 7.5, height_cm: 65, head_cm: 42 }], vaccines: [], checkups: [] };
+
+try {
+  EM.exportJSON(testData, testChild);
+  assert('exportJSON runs without throwing', true);
+} catch (e) {
+  assert('exportJSON runs without throwing (' + e.message + ')', false);
+}
+
+try {
+  EM.exportCSV(testData, testChild, 'imperial');
+  assert('exportCSV runs without throwing', true);
+} catch (e) {
+  assert('exportCSV runs without throwing (' + e.message + ')', false);
+}
+
+try {
+  EM.exportEHR(testData, testChild);
+  assert('exportEHR runs without throwing', true);
+} catch (e) {
+  assert('exportEHR runs without throwing (' + e.message + ')', false);
+}
 
 // === Summary ===
 console.log('\n════════════════════════════');

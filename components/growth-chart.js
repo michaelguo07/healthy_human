@@ -159,7 +159,8 @@ window.GrowthChart = (function () {
       case 'length_for_age':
       case 'height_for_age':
       case 'stature_for_age': valueKey = 'height_cm'; break;
-      case 'head_for_age': valueKey = 'head_cm'; break;
+      case 'head_for_age':
+      case 'head_circumference_for_age': valueKey = 'head_cm'; break;
       default: valueKey = 'weight_kg';
     }
 
