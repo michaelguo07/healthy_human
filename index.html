@@ -302,26 +302,6 @@
       <!-- ——— Vaccines & Checkups Tab ——— -->
       <section id="panel-vaccines" class="tab-panel" role="tabpanel" aria-labelledby="tab-vaccines" data-panel="vaccines" hidden>
 
-        <!-- Vaccine Status -->
-        <div class="section-card" id="vaccine-status-section">
-          <h2>Vaccine Status</h2>
-          <div class="table-wrapper">
-            <table id="vaccine-table">
-              <thead>
-                <tr>
-                  <th class="sortable" data-sort="name" style="cursor: pointer; user-select: none;">Vaccine <span class="sort-icon"></span></th>
-                  <th>Dose</th>
-                  <th class="sortable" data-sort="status" style="cursor: pointer; user-select: none;">Status <span class="sort-icon"></span></th>
-                  <th class="sortable" data-sort="date" style="cursor: pointer; user-select: none;">Date Given / Due <span class="sort-icon"></span></th>
-                </tr>
-              </thead>
-              <tbody id="vaccine-tbody">
-                <!-- Populated by JS -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <!-- Log Vaccine -->
         <div class="section-card" id="log-vaccine-section">
           <h2>Log a Vaccine</h2>
@@ -349,23 +329,20 @@
           </form>
         </div>
 
-        <!-- Checkup Tracker -->
-        <div class="section-card" id="checkup-section">
-          <h2>Well-Child Checkups</h2>
-          <div class="next-checkup" id="next-checkup">
-            <!-- Populated by JS: next recommended checkup -->
-          </div>
+        <!-- Vaccine Status -->
+        <div class="section-card" id="vaccine-status-section">
+          <h2>Vaccine Status</h2>
           <div class="table-wrapper">
-            <table id="checkup-table">
+            <table id="vaccine-table">
               <thead>
                 <tr>
-                  <th>Visit</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                  <th>Notes</th>
+                  <th class="sortable" data-sort="name" style="cursor: pointer; user-select: none;">Vaccine <span class="sort-icon"></span></th>
+                  <th>Dose</th>
+                  <th class="sortable" data-sort="status" style="cursor: pointer; user-select: none;">Status <span class="sort-icon"></span></th>
+                  <th class="sortable" data-sort="date" style="cursor: pointer; user-select: none;">Date Given / Due <span class="sort-icon"></span></th>
                 </tr>
               </thead>
-              <tbody id="checkup-tbody">
+              <tbody id="vaccine-tbody">
                 <!-- Populated by JS -->
               </tbody>
             </table>
@@ -395,6 +372,29 @@
             </div>
             <button type="submit" class="btn-primary">Log Checkup</button>
           </form>
+        </div>
+
+        <!-- Checkup Tracker -->
+        <div class="section-card" id="checkup-section">
+          <h2>Well-Child Checkups</h2>
+          <div class="next-checkup" id="next-checkup">
+            <!-- Populated by JS: next recommended checkup -->
+          </div>
+          <div class="table-wrapper">
+            <table id="checkup-table">
+              <thead>
+                <tr>
+                  <th>Visit</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody id="checkup-tbody">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- Source citation -->
