@@ -1065,10 +1065,22 @@
       });
     }
 
+    var btnEHR = document.getElementById('export-ehr');
+
     if (btnJSON) btnJSON.addEventListener('click', triggerJSONExport);
     if (quickBackupBtn) quickBackupBtn.addEventListener('click', triggerJSONExport);
     if (headerBackupBtn) headerBackupBtn.addEventListener('click', triggerJSONExport);
     if (modalBackupJsonBtn) modalBackupJsonBtn.addEventListener('click', triggerJSONExport);
+
+    if (btnEHR) {
+      btnEHR.addEventListener('click', function () {
+        var child = ChildManager.getActiveChild();
+        if (!child) return;
+        var data = ChildManager.getChildData(child.id);
+        ExportManager.exportEHR(data, child);
+        showToast('FHIR R4 EHR clinical record downloaded!');
+      });
+    }
   }
 
   // ─────────────────── Import Events ───────────────────

@@ -252,28 +252,186 @@ window.ExportManager = (function () {
     doc.save(filename);
   }
 
-  // ─────────────────── JSON Backup ───────────────────
+  // ─────────────────── EHR Clinical Record (FHIR R4) ───────────────────
 
-  function exportJSON(childData, child) {
-    var payload = {
-      exportFormat: 'healthy_human_backup',
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      child: child,
-      measurements: childData.measurements || [],
-      vaccines: childData.vaccines || [],
-      checkups: childData.checkups || []
+  function exportEHR(childData, child) {
+    var sex = (child.sex || 'female').toLowerCase();
+    var fhirGender = sex === 'male' ? 'male' : sex === 'female' ? 'female' : 'unknown';
+    var patientRef = 'Patient/' + (child.id || 'patient-1');
+
+    var entries = [];
+
+    // Patient Resource
+    entries.push({
+      fullUrl: 'urn:uuid:' + (child.id || 'patient-1'),
+      resource: {
+        resourceType: 'Patient',
+        id: child.id || 'patient-1',
+        active: true,
+        name: [
+          {
+            use: 'official',
+            text: child.name,
+            given: [child.name]
+          }
+        ],
+        gender: fhirGender,
+        birthDate: child.dob
+      }
+    });
+
+    // Measurements -> Observation Resources (LOINC coded)
+    var measurements = childData.measurements || [];
+    measurements.forEach(function (m, idx) {
+      var obsId = 'obs-' + (m.id || idx);
+
+      // Weight (LOINC 29463-7)
+      if (m.weight_kg != null) {
+        entries.push({
+          fullUrl: 'urn:uuid:' + obsId + '-weight',
+          resource: {
+            resourceType: 'Observation',
+            id: obsId + '-weight',
+            status: 'final',
+            category: [{
+              coding: [{
+                system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+                code: 'vital-signs',
+                display: 'Vital Signs'
+              }]
+            }],
+            code: {
+              coding: [{
+                system: 'http://loinc.org',
+                code: '29463-7',
+                display: 'Body weight'
+              }],
+              text: 'Weight'
+            },
+            subject: { reference: patientRef, display: child.name },
+            effectiveDateTime: m.date,
+            valueQuantity: {
+              value: Number(m.weight_kg.toFixed(2)),
+              unit: 'kg',
+              system: 'http://unitsofmeasure.org',
+              code: 'kg'
+            }
+          }
+        });
+      }
+
+      // Height / Length (LOINC 8302-2)
+      if (m.height_cm != null) {
+        entries.push({
+          fullUrl: 'urn:uuid:' + obsId + '-height',
+          resource: {
+            resourceType: 'Observation',
+            id: obsId + '-height',
+            status: 'final',
+            category: [{
+              coding: [{
+                system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+                code: 'vital-signs',
+                display: 'Vital Signs'
+              }]
+            }],
+            code: {
+              coding: [{
+                system: 'http://loinc.org',
+                code: '8302-2',
+                display: 'Body height'
+              }],
+              text: 'Body height / length'
+            },
+            subject: { reference: patientRef, display: child.name },
+            effectiveDateTime: m.date,
+            valueQuantity: {
+              value: Number(m.height_cm.toFixed(1)),
+              unit: 'cm',
+              system: 'http://unitsofmeasure.org',
+              code: 'cm'
+            }
+          }
+        });
+      }
+
+      // Head Circumference (LOINC 8287-5)
+      if (m.head_cm != null) {
+        entries.push({
+          fullUrl: 'urn:uuid:' + obsId + '-head',
+          resource: {
+            resourceType: 'Observation',
+            id: obsId + '-head',
+            status: 'final',
+            category: [{
+              coding: [{
+                system: 'http://terminology.hl7.org/CodeSystem/observation-category',
+                code: 'vital-signs',
+                display: 'Vital Signs'
+              }]
+            }],
+            code: {
+              coding: [{
+                system: 'http://loinc.org',
+                code: '8287-5',
+                display: 'Head Occipital-frontal circumference'
+              }],
+              text: 'Head Circumference'
+            },
+            subject: { reference: patientRef, display: child.name },
+            effectiveDateTime: m.date,
+            valueQuantity: {
+              value: Number(m.head_cm.toFixed(1)),
+              unit: 'cm',
+              system: 'http://unitsofmeasure.org',
+              code: 'cm'
+            }
+          }
+        });
+      }
+    });
+
+    // Vaccines -> Immunization Resources
+    var vaccines = childData.vaccines || [];
+    vaccines.forEach(function (v, idx) {
+      entries.push({
+        fullUrl: 'urn:uuid:imm-' + (v.id || idx),
+        resource: {
+          resourceType: 'Immunization',
+          id: 'imm-' + (v.id || idx),
+          status: 'completed',
+          vaccineCode: {
+            text: v.vaccineName + ' (Dose ' + v.doseNumber + ')'
+          },
+          patient: { reference: patientRef, display: child.name },
+          occurrenceDateTime: v.dateGiven
+        }
+      });
+    });
+
+    var bundle = {
+      resourceType: 'Bundle',
+      id: 'healthy-human-fhir-' + (child.name || 'patient').toLowerCase().replace(/\s+/g, '-'),
+      meta: {
+        lastUpdated: new Date().toISOString(),
+        source: 'Healthy Human Pediatric Health Tracker',
+        profile: ['http://hl7.org/fhir/StructureDefinition/Bundle'],
+        ehrCompatibility: ['Epic Systems', 'Oracle Cerner', 'Meditech Expanse', 'HL7 FHIR R4 Standard']
+      },
+      type: 'collection',
+      entry: entries
     };
 
-    var json = JSON.stringify(payload, null, 2);
-    var blob = new Blob([json], { type: 'application/json' });
-    var filename = 'healthy_human_' + (child.name || 'backup').replace(/\s+/g, '_').toLowerCase() + '_backup_' + todayISO() + '.json';
+    var jsonStr = JSON.stringify(bundle, null, 2);
+    var blob = new Blob([jsonStr], { type: 'application/fhir+json;charset=utf-8;' });
+    var filename = 'healthy_human_fhir_r4_' + (child.name || 'patient').replace(/\s+/g, '_').toLowerCase() + '_' + todayISO() + '.json';
     downloadBlob(blob, filename);
   }
 
   return {
     exportCSV: exportCSV,
     exportPDF: exportPDF,
-    exportJSON: exportJSON
+    exportJSON: exportJSON,
+    exportEHR: exportEHR
   };
 })();
