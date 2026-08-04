@@ -939,30 +939,59 @@ tbody td:last-child .btn-delete:hover {
   margin-left: auto;
 }
 
-/* Nav Backup Button */
-.btn-backup-header-nav {
+/* Header Nav Action Buttons */
+.btn-nav-action {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--primary-light-bg, rgba(78, 139, 124, 0.12));
-  color: var(--primary-dark, #2b564c);
-  border: 1px solid rgba(78, 139, 124, 0.3);
+  background: var(--surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
   font-family: var(--font-ui);
   font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
+  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+  white-space: nowrap;
 }
 
-.btn-backup-header-nav:hover {
-  background: rgba(78, 139, 124, 0.2);
+.btn-nav-action:hover {
+  background: var(--muted);
+  color: var(--ink);
   border-color: var(--primary);
 }
 
-.btn-backup-header-nav:active {
-  transform: scale(0.97);
+.btn-nav-action:active {
+  transform: scale(0.96);
+}
+
+.btn-nav-action svg {
+  flex-shrink: 0;
+}
+
+.btn-nav-delete {
+  color: var(--status-overdue, #d9534f);
+  border-color: rgba(217, 83, 79, 0.3);
+}
+
+.btn-nav-delete:hover {
+  background: rgba(217, 83, 79, 0.08);
+  color: var(--status-overdue, #d9534f);
+  border-color: var(--status-overdue, #d9534f);
+}
+
+.btn-nav-highlight {
+  background: var(--primary-light-bg, rgba(78, 139, 124, 0.12));
+  color: var(--primary-dark, #2b564c);
+  border-color: rgba(78, 139, 124, 0.35);
+  font-weight: 600;
+}
+
+.btn-nav-highlight:hover {
+  background: rgba(78, 139, 124, 0.22);
+  border-color: var(--primary);
 }
 
 /* Front Page Privacy Banner & Actions */
@@ -1142,20 +1171,17 @@ tbody td:last-child .btn-delete:hover {
   }
 
   .header-right {
-    flex: 0 0 auto;
-    gap: 4px;
+    flex: 1 1 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
     align-items: center;
   }
 
-  .btn-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: var(--radius-sm);
-  }
-
-  .btn-icon:active {
-    transform: scale(0.94);
-    background: var(--muted);
+  .btn-nav-action {
+    padding: 6px 10px;
+    font-size: 0.78125rem;
+    height: 36px;
   }
 
   .unit-toggle {

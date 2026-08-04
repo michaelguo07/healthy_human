@@ -132,30 +132,33 @@
         </div>
       </div>
       <div class="header-right">
-        <button id="add-child-btn" class="btn-icon" title="Add Child" aria-label="Add child">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="add-child-btn" class="btn-nav-action" title="Add a new child profile" aria-label="Add child">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="10" y1="4" x2="10" y2="16" />
             <line x1="4" y1="10" x2="16" y2="10" />
           </svg>
+          <span>Add Child</span>
         </button>
-        <button id="import-profile-btn" class="btn-icon" title="Import Profile Backup" aria-label="Import profile backup">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="import-profile-btn" class="btn-nav-action" title="Import profile backup file" aria-label="Import profile backup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
+          <span>Import Backup</span>
         </button>
-        <button id="delete-child-btn" class="btn-icon" title="Delete Profile" aria-label="Delete profile" style="color: var(--status-overdue)">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="delete-child-btn" class="btn-nav-action btn-nav-delete" title="Delete current child profile" aria-label="Delete profile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
+          <span>Delete Profile</span>
         </button>
         <div class="unit-toggle" id="unit-toggle">
           <button class="unit-btn active" data-unit="imperial">lb/in</button>
           <button class="unit-btn" data-unit="metric">kg/cm</button>
         </div>
-        <button id="header-backup-btn" class="btn-backup-header-nav" title="Download JSON Data Backup">
+        <button id="header-backup-btn" class="btn-nav-action btn-nav-highlight" title="Download JSON Data Backup">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
@@ -163,12 +166,13 @@
           </svg>
           <span>Backup JSON</span>
         </button>
-        <button id="export-btn" class="btn-icon" title="Export Data Options (PDF / CSV)" aria-label="Export data options">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+        <button id="export-btn" class="btn-nav-action" title="Export PDF or CSV reports" aria-label="Export reports">
+          <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 10l4 4 4-4" />
             <line x1="10" y1="3" x2="10" y2="14" />
             <path d="M3 14v3h14v-3" />
           </svg>
+          <span>Export Reports</span>
         </button>
       </div>
     </header>
