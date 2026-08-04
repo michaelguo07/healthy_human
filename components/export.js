@@ -196,34 +196,35 @@ window.ExportManager = (function () {
   }
 
   function exportPDF(childData, child, units) {
-    if (typeof window.jspdf === 'undefined') {
+    var jsPDFConstructor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF || (window.jspdf && window.jspdf.default ? window.jspdf.default.jsPDF : null);
+
+    if (!jsPDFConstructor) {
       console.error('jsPDF library not loaded.');
-      alert('PDF generation library is still loading. Please try again in a moment.');
+      alert('PDF generation library is still loading or blocked. Please refresh the page and try again.');
       return;
     }
 
-    var jsPDF = window.jspdf.jsPDF;
-    var doc = new jsPDF('l', 'mm', 'a4'); // landscape A4: 297mm x 210mm
+    var doc = new jsPDFConstructor('l', 'mm', 'a4'); // landscape A4: 297mm x 210mm
 
     var sex = child.sex || 'female';
-    var dob = child.dob;
-    var ageM = ageInMonths(dob, todayISO());
-    var hMetric = ageM != null && ageM >= 24 ? 'stature_for_age' : 'length_for_age';
+    var dob = child.dob || todayISO();
+    var ageM = ageInMonths(dob, todayISO()) || 0;
+    var hMetric = ageM >= 24 ? 'stature_for_age' : 'length_for_age';
 
-    var hasHeadCirc = (ageM != null && ageM < 36) || (childData.measurements && childData.measurements.some(function (m) { return m.head_cm != null; }));
+    var hasHeadCirc = ageM < 36 || (childData.measurements && childData.measurements.some(function (m) { return m.head_cm != null; }));
 
-    // Generate chart images in memory
+    // Generate chart images in memory safely
     var weightImg = generateChartImage(childData, 'weight_for_age', sex, dob, units);
     var heightImg = generateChartImage(childData, hMetric, sex, dob, units);
     var headImg = hasHeadCirc ? generateChartImage(childData, 'head_circumference_for_age', sex, dob, units) : null;
 
-    var details = 'Child: ' + child.name + '   |   DOB: ' + dob + '   |   Sex: ' + (sex.charAt(0).toUpperCase() + sex.slice(1)) + '   |   Age: ' + formatAge(ageM);
+    var details = 'Child: ' + (child.name || 'Child') + '   |   DOB: ' + dob + '   |   Sex: ' + (sex.charAt(0).toUpperCase() + sex.slice(1)) + '   |   Age: ' + formatAge(ageM);
 
     // --- Page 1: Weight Chart ---
     doc.setFont('Helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(28, 43, 51);
-    doc.text('Healthy Human — Pediatric Growth Report', 15, 18);
+    doc.text('Healthy Human — Pediatric Growth Report (Weight)', 15, 18);
 
     doc.setFont('Helvetica', 'normal');
     doc.setFontSize(11);
@@ -231,9 +232,13 @@ window.ExportManager = (function () {
     doc.text(details, 15, 25);
 
     if (weightImg) {
-      doc.addImage(weightImg, 'PNG', 15, 30, 267, 160);
+      try {
+        doc.addImage(weightImg, 'PNG', 15, 30, 267, 160);
+      } catch (e) {
+        doc.text('Weight Growth Data Summary: ' + (childData.measurements ? childData.measurements.length : 0) + ' recorded checkups.', 15, 45);
+      }
     } else {
-      doc.text('Weight Growth Chart (Data recorded: ' + (childData.measurements ? childData.measurements.length : 0) + ' entries)', 15, 45);
+      doc.text('Weight Growth Data Summary: ' + (childData.measurements ? childData.measurements.length : 0) + ' recorded checkups.', 15, 45);
     }
 
     // --- Page 2: Length/Height Chart ---
@@ -241,7 +246,7 @@ window.ExportManager = (function () {
     doc.setFont('Helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(28, 43, 51);
-    doc.text('Healthy Human — Pediatric Growth Report', 15, 18);
+    doc.text('Healthy Human — Pediatric Growth Report (Height)', 15, 18);
 
     doc.setFont('Helvetica', 'normal');
     doc.setFontSize(11);
@@ -249,9 +254,13 @@ window.ExportManager = (function () {
     doc.text(details, 15, 25);
 
     if (heightImg) {
-      doc.addImage(heightImg, 'PNG', 15, 30, 267, 160);
+      try {
+        doc.addImage(heightImg, 'PNG', 15, 30, 267, 160);
+      } catch (e) {
+        doc.text('Length/Height Growth Data Summary', 15, 45);
+      }
     } else {
-      doc.text('Length/Height Growth Chart', 15, 45);
+      doc.text('Length/Height Growth Data Summary', 15, 45);
     }
 
     // --- Page 3: Head Circumference Chart (if applicable) ---
@@ -260,14 +269,18 @@ window.ExportManager = (function () {
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(16);
       doc.setTextColor(28, 43, 51);
-      doc.text('Healthy Human — Pediatric Growth Report', 15, 18);
+      doc.text('Healthy Human — Pediatric Growth Report (Head Circ.)', 15, 18);
 
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(100, 110, 115);
       doc.text(details, 15, 25);
 
-      doc.addImage(headImg, 'PNG', 15, 30, 267, 160);
+      try {
+        doc.addImage(headImg, 'PNG', 15, 30, 267, 160);
+      } catch (e) {
+        doc.text('Head Circumference Data Summary', 15, 45);
+      }
     }
 
     var filename = 'healthy_human_' + (child.name || 'report').replace(/\s+/g, '_').toLowerCase() + '_growth_report_' + todayISO() + '.pdf';
