@@ -444,14 +444,18 @@
   }
 
   function renderSourceFooter(child) {
-    var footerEl = document.getElementById('growth-source-footer');
-    if (!footerEl) return;
+    var badgeEl = document.getElementById('active-source-badge');
+    if (!badgeEl) return;
+    if (!child) {
+      badgeEl.textContent = '';
+      return;
+    }
 
     var ageM = ageInMonths(child.dob, new Date().toISOString().split('T')[0]);
     var source = ageM != null && ageM < 24
-      ? 'WHO Child Growth Standards, 2006'
-      : 'CDC Growth Charts, 2000';
-    footerEl.textContent = 'Growth data: ' + source;
+      ? 'Active reference for ' + (child.name || 'child') + ': WHO Child Growth Standards (0–24 months)'
+      : 'Active reference for ' + (child.name || 'child') + ': CDC Growth Charts (ages 2–20 years)';
+    badgeEl.textContent = source;
   }
 
   // ─────────────────── Chart Metric Switching ───────────────────

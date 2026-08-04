@@ -1156,6 +1156,13 @@ tbody td:last-child .btn-delete:hover {
   user-select: none;
 }
 
+.active-source-badge {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+  font-style: italic;
+}
+
 /* ============================================================
    Responsive Breakpoints
    ============================================================ */
