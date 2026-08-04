@@ -23,17 +23,34 @@ window.ExportManager = (function () {
     return new Date().toISOString().split('T')[0];
   }
 
+  function parseDate(dateStr) {
+    if (!dateStr) return null;
+    if (dateStr instanceof Date) return isNaN(dateStr.getTime()) ? null : dateStr;
+    var s = String(dateStr).split('T')[0];
+    var parts = s.split('-');
+    if (parts.length === 3) {
+      var y = parseInt(parts[0], 10);
+      var m = parseInt(parts[1], 10) - 1;
+      var d = parseInt(parts[2], 10);
+      var dt = new Date(y, m, d);
+      if (!isNaN(dt.getTime())) return dt;
+    }
+    var dt2 = new Date(dateStr);
+    return isNaN(dt2.getTime()) ? null : dt2;
+  }
+
   function ageInMonths(dob, date) {
-    if (!dob || !date) return null;
-    var d1 = new Date(dob + 'T00:00:00');
-    var d2 = new Date(date + 'T00:00:00');
-    return (d2.getFullYear() - d1.getFullYear()) * 12 +
-           (d2.getMonth() - d1.getMonth()) +
-           (d2.getDate() - d1.getDate()) / 30.44;
+    var d1 = parseDate(dob);
+    var d2 = parseDate(date);
+    if (!d1 || !d2) return null;
+    var months = (d2.getFullYear() - d1.getFullYear()) * 12 +
+                 (d2.getMonth() - d1.getMonth()) +
+                 (d2.getDate() - d1.getDate()) / 30.44;
+    return isNaN(months) ? null : months;
   }
 
   function formatAge(months) {
-    if (months == null) return '—';
+    if (months == null || isNaN(months)) return '—';
     if (months < 1) return 'Newborn';
     if (months < 24) {
       var m = Math.round(months);
@@ -47,7 +64,7 @@ window.ExportManager = (function () {
   }
 
   function getPercentile(metric, sex, ageMonths, value) {
-    if (value == null || ageMonths == null) return null;
+    if (value == null || isNaN(value) || value <= 0 || ageMonths == null || isNaN(ageMonths)) return null;
     try {
       var lms = GrowthCalc.lookupLMS(metric, sex, ageMonths);
       if (!lms) return null;
@@ -74,7 +91,7 @@ window.ExportManager = (function () {
     document.body.appendChild(a);
     a.click();
     setTimeout(function () {
-      document.body.removeChild(a);
+      if (a.parentNode) a.parentNode.removeChild(a);
       URL.revokeObjectURL(url);
     }, 100);
   }
@@ -82,18 +99,23 @@ window.ExportManager = (function () {
   // ─────────────────── CSV ───────────────────
 
   function exportCSV(childData, child, units) {
+    if (!child) {
+      throw new Error('No child profile selected for export.');
+    }
+    childData = childData || {};
+
     var isImperial = units === 'imperial';
     var measurements = childData.measurements || [];
     var vaccines = childData.vaccines || [];
-    var sex = child.sex || 'female';
-    var dob = child.dob;
+    var sex = (child.sex || 'female').toLowerCase();
+    var dob = child.dob || '';
 
     var wUnit = isImperial ? 'lb' : 'kg';
     var hUnit = isImperial ? 'in' : 'cm';
 
     var rows = [];
     rows.push(csvEscape('Healthy Human - Growth Data Export'));
-    rows.push(csvEscape('Child') + ',' + csvEscape(child.name));
+    rows.push(csvEscape('Child') + ',' + csvEscape(child.name || 'Child'));
     rows.push(csvEscape('Date of Birth') + ',' + csvEscape(dob));
     rows.push(csvEscape('Sex') + ',' + csvEscape(sex.charAt(0).toUpperCase() + sex.slice(1)));
     rows.push(csvEscape('Export Date') + ',' + csvEscape(todayISO()));
@@ -114,25 +136,26 @@ window.ExportManager = (function () {
     ].join(','));
 
     measurements.forEach(function (m) {
+      if (!m) return;
       var ageM = ageInMonths(dob, m.date);
       var hMetric = ageM != null && ageM >= 24 ? 'stature_for_age' : 'length_for_age';
 
-      var weight = m.weight_kg != null
+      var weight = m.weight_kg != null && !isNaN(m.weight_kg) && m.weight_kg > 0
         ? (isImperial ? (m.weight_kg * KG_TO_LB).toFixed(1) : m.weight_kg.toFixed(1))
         : '';
-      var height = m.height_cm != null
+      var height = m.height_cm != null && !isNaN(m.height_cm) && m.height_cm > 0
         ? (isImperial ? (m.height_cm * CM_TO_IN).toFixed(1) : m.height_cm.toFixed(1))
         : '';
-      var head = m.head_cm != null
+      var head = m.head_cm != null && !isNaN(m.head_cm) && m.head_cm > 0
         ? (isImperial ? (m.head_cm * CM_TO_IN).toFixed(1) : m.head_cm.toFixed(1))
         : '';
 
-      var wPct = getPercentile('weight_for_age', sex, ageM, m.weight_kg);
-      var hPct = getPercentile(hMetric, sex, ageM, m.height_cm);
-      var cPct = getPercentile('head_for_age', sex, ageM, m.head_cm);
+      var wPct = m.weight_kg != null ? getPercentile('weight_for_age', sex, ageM, m.weight_kg) : null;
+      var hPct = m.height_cm != null ? getPercentile(hMetric, sex, ageM, m.height_cm) : null;
+      var cPct = m.head_cm != null ? getPercentile('head_for_age', sex, ageM, m.head_cm) : null;
 
       rows.push([
-        csvEscape(m.date),
+        csvEscape(m.date || ''),
         csvEscape(formatAge(ageM)),
         csvEscape(weight),
         csvEscape(ordinal(wPct)),
@@ -150,14 +173,15 @@ window.ExportManager = (function () {
     rows.push([csvEscape('Vaccine'), csvEscape('Dose'), csvEscape('Date Given')].join(','));
 
     vaccines.forEach(function (v) {
+      if (!v) return;
       rows.push([
-        csvEscape(v.vaccineName),
-        csvEscape(v.doseNumber),
-        csvEscape(v.dateGiven)
+        csvEscape(v.vaccineName || v.vaccineId || ''),
+        csvEscape(v.doseNumber || ''),
+        csvEscape(v.dateGiven || '')
       ].join(','));
     });
 
-    var csv = rows.join('\n');
+    var csv = rows.join('\r\n');
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     var filename = 'healthy_human_' + (child.name || 'export').replace(/\s+/g, '_').toLowerCase() + '_' + todayISO() + '.csv';
     downloadBlob(blob, filename);
