@@ -1032,40 +1032,63 @@
       showToast('Please create or select a child profile first.');
       return;
     }
-    var data = ChildManager.getChildData(child.id);
-    ExportManager.exportJSON(data, child);
-    showToast('JSON backup file downloaded!');
+    try {
+      var data = ChildManager.getChildData(child.id);
+      ExportManager.exportJSON(data, child);
+      showToast('JSON backup file downloaded!');
+    } catch (e) {
+      console.error('Export JSON error:', e);
+      showToast('Failed to export JSON backup.');
+    }
   }
 
   function bindExportEvents() {
+    function ensureActiveChild() {
+      var child = ChildManager.getActiveChild();
+      if (!child) {
+        showToast('Please create or select a child profile first.');
+        return null;
+      }
+      return child;
+    }
+
     var btnCSV = document.getElementById('export-csv');
     var btnPNG = document.getElementById('export-chart');
     var btnJSON = document.getElementById('export-json');
     var quickBackupBtn = document.getElementById('quick-backup-btn');
     var headerBackupBtn = document.getElementById('header-backup-btn');
     var modalBackupJsonBtn = document.getElementById('modal-backup-json-btn');
+    var btnEHR = document.getElementById('export-ehr');
 
     if (btnCSV) {
       btnCSV.addEventListener('click', function () {
-        var child = ChildManager.getActiveChild();
+        var child = ensureActiveChild();
         if (!child) return;
-        var data = ChildManager.getChildData(child.id);
-        ExportManager.exportCSV(data, child, units);
-        showToast('CSV downloaded!');
+        try {
+          var data = ChildManager.getChildData(child.id);
+          ExportManager.exportCSV(data, child, units);
+          showToast('CSV downloaded!');
+        } catch (e) {
+          console.error('Export CSV error:', e);
+          showToast('Failed to export CSV file.');
+        }
       });
     }
 
     if (btnPNG) {
       btnPNG.addEventListener('click', function () {
-        var child = ChildManager.getActiveChild();
+        var child = ensureActiveChild();
         if (!child) return;
-        var data = ChildManager.getChildData(child.id);
-        ExportManager.exportPDF(data, child, units);
-        showToast('PDF downloaded!');
+        try {
+          var data = ChildManager.getChildData(child.id);
+          ExportManager.exportPDF(data, child, units);
+          showToast('PDF downloaded!');
+        } catch (e) {
+          console.error('Export PDF error:', e);
+          showToast('Failed to export PDF report.');
+        }
       });
     }
-
-    var btnEHR = document.getElementById('export-ehr');
 
     if (btnJSON) btnJSON.addEventListener('click', triggerJSONExport);
     if (quickBackupBtn) quickBackupBtn.addEventListener('click', triggerJSONExport);
@@ -1074,11 +1097,16 @@
 
     if (btnEHR) {
       btnEHR.addEventListener('click', function () {
-        var child = ChildManager.getActiveChild();
+        var child = ensureActiveChild();
         if (!child) return;
-        var data = ChildManager.getChildData(child.id);
-        ExportManager.exportEHR(data, child);
-        showToast('FHIR R4 EHR clinical record downloaded!');
+        try {
+          var data = ChildManager.getChildData(child.id);
+          ExportManager.exportEHR(data, child);
+          showToast('FHIR R4 EHR clinical record downloaded!');
+        } catch (e) {
+          console.error('Export EHR error:', e);
+          showToast('Failed to export EHR record.');
+        }
       });
     }
   }

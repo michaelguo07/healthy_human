@@ -165,20 +165,34 @@ window.ExportManager = (function () {
 
   // ─────────────────── Chart PDF ───────────────────
 
+  // ─────────────────── Chart PDF ───────────────────
+
   function generateChartImage(childData, metric, sex, childDob, units) {
-    var tempCanvas = document.createElement('canvas');
-    tempCanvas.width = 800;
-    tempCanvas.height = 450;
+    try {
+      var tempCanvas = document.createElement('canvas');
+      tempCanvas.width = 800;
+      tempCanvas.height = 450;
+      tempCanvas.style.position = 'absolute';
+      tempCanvas.style.left = '-9999px';
+      tempCanvas.style.top = '-9999px';
+      document.body.appendChild(tempCanvas);
 
-    var config = GrowthChart.buildConfig(childData, metric, sex, childDob, units);
-    config.options.responsive = false;
-    config.options.animation = false;
-    config.options.maintainAspectRatio = false;
+      var config = GrowthChart.buildConfig(childData, metric, sex, childDob, units);
+      config.options.responsive = false;
+      config.options.animation = false;
+      config.options.maintainAspectRatio = false;
 
-    var tempChart = new Chart(tempCanvas, config);
-    var dataUrl = tempChart.toBase64Image('image/png', 1);
-    tempChart.destroy();
-    return dataUrl;
+      var tempChart = new Chart(tempCanvas, config);
+      var dataUrl = tempChart.toBase64Image('image/png', 1);
+      tempChart.destroy();
+      if (tempCanvas.parentNode) {
+        tempCanvas.parentNode.removeChild(tempCanvas);
+      }
+      return dataUrl;
+    } catch (e) {
+      console.warn('generateChartImage failed for metric:', metric, e);
+      return null;
+    }
   }
 
   function exportPDF(childData, child, units) {
@@ -216,7 +230,11 @@ window.ExportManager = (function () {
     doc.setTextColor(100, 110, 115);
     doc.text(details, 15, 25);
 
-    doc.addImage(weightImg, 'PNG', 15, 30, 267, 160);
+    if (weightImg) {
+      doc.addImage(weightImg, 'PNG', 15, 30, 267, 160);
+    } else {
+      doc.text('Weight Growth Chart (Data recorded: ' + (childData.measurements ? childData.measurements.length : 0) + ' entries)', 15, 45);
+    }
 
     // --- Page 2: Length/Height Chart ---
     doc.addPage('l', 'mm', 'a4');
@@ -230,7 +248,11 @@ window.ExportManager = (function () {
     doc.setTextColor(100, 110, 115);
     doc.text(details, 15, 25);
 
-    doc.addImage(heightImg, 'PNG', 15, 30, 267, 160);
+    if (heightImg) {
+      doc.addImage(heightImg, 'PNG', 15, 30, 267, 160);
+    } else {
+      doc.text('Length/Height Growth Chart', 15, 45);
+    }
 
     // --- Page 3: Head Circumference Chart (if applicable) ---
     if (headImg) {
