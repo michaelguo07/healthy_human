@@ -314,6 +314,11 @@ window.ExportManager = (function () {
   // ─────────────────── EHR Clinical Record (FHIR R4) ───────────────────
 
   function exportEHR(childData, child) {
+    if (!child) {
+      throw new Error('No child profile selected for export.');
+    }
+    childData = childData || {};
+
     var sex = (child.sex || 'female').toLowerCase();
     var fhirGender = sex === 'male' ? 'male' : sex === 'female' ? 'female' : 'unknown';
     var patientRef = 'Patient/' + (child.id || 'patient-1');
@@ -330,22 +335,24 @@ window.ExportManager = (function () {
         name: [
           {
             use: 'official',
-            text: child.name,
-            given: [child.name]
+            text: child.name || 'Patient',
+            given: [child.name || 'Patient']
           }
         ],
         gender: fhirGender,
-        birthDate: child.dob
+        birthDate: child.dob || todayISO()
       }
     });
 
     // Measurements -> Observation Resources (LOINC coded)
     var measurements = childData.measurements || [];
     measurements.forEach(function (m, idx) {
+      if (!m) return;
       var obsId = 'obs-' + (m.id || idx);
 
       // Weight (LOINC 29463-7)
-      if (m.weight_kg != null) {
+      if (m.weight_kg != null && !isNaN(m.weight_kg) && Number(m.weight_kg) > 0) {
+        var wKg = Number(m.weight_kg);
         entries.push({
           fullUrl: 'urn:uuid:' + obsId + '-weight',
           resource: {
@@ -367,10 +374,10 @@ window.ExportManager = (function () {
               }],
               text: 'Weight'
             },
-            subject: { reference: patientRef, display: child.name },
-            effectiveDateTime: m.date,
+            subject: { reference: patientRef, display: child.name || 'Patient' },
+            effectiveDateTime: m.date || todayISO(),
             valueQuantity: {
-              value: Number(m.weight_kg.toFixed(2)),
+              value: Number(wKg.toFixed(2)),
               unit: 'kg',
               system: 'http://unitsofmeasure.org',
               code: 'kg'
@@ -380,7 +387,8 @@ window.ExportManager = (function () {
       }
 
       // Height / Length (LOINC 8302-2)
-      if (m.height_cm != null) {
+      if (m.height_cm != null && !isNaN(m.height_cm) && Number(m.height_cm) > 0) {
+        var hCm = Number(m.height_cm);
         entries.push({
           fullUrl: 'urn:uuid:' + obsId + '-height',
           resource: {
@@ -402,10 +410,10 @@ window.ExportManager = (function () {
               }],
               text: 'Body height / length'
             },
-            subject: { reference: patientRef, display: child.name },
-            effectiveDateTime: m.date,
+            subject: { reference: patientRef, display: child.name || 'Patient' },
+            effectiveDateTime: m.date || todayISO(),
             valueQuantity: {
-              value: Number(m.height_cm.toFixed(1)),
+              value: Number(hCm.toFixed(1)),
               unit: 'cm',
               system: 'http://unitsofmeasure.org',
               code: 'cm'
@@ -415,7 +423,8 @@ window.ExportManager = (function () {
       }
 
       // Head Circumference (LOINC 8287-5)
-      if (m.head_cm != null) {
+      if (m.head_cm != null && !isNaN(m.head_cm) && Number(m.head_cm) > 0) {
+        var hcCm = Number(m.head_cm);
         entries.push({
           fullUrl: 'urn:uuid:' + obsId + '-head',
           resource: {
@@ -437,10 +446,10 @@ window.ExportManager = (function () {
               }],
               text: 'Head Circumference'
             },
-            subject: { reference: patientRef, display: child.name },
-            effectiveDateTime: m.date,
+            subject: { reference: patientRef, display: child.name || 'Patient' },
+            effectiveDateTime: m.date || todayISO(),
             valueQuantity: {
-              value: Number(m.head_cm.toFixed(1)),
+              value: Number(hcCm.toFixed(1)),
               unit: 'cm',
               system: 'http://unitsofmeasure.org',
               code: 'cm'
@@ -453,6 +462,9 @@ window.ExportManager = (function () {
     // Vaccines -> Immunization Resources
     var vaccines = childData.vaccines || [];
     vaccines.forEach(function (v, idx) {
+      if (!v) return;
+      var vName = v.vaccineName || v.vaccineId || 'Vaccine';
+      var dNum = v.doseNumber ? ' (Dose ' + v.doseNumber + ')' : '';
       entries.push({
         fullUrl: 'urn:uuid:imm-' + (v.id || idx),
         resource: {
@@ -460,10 +472,10 @@ window.ExportManager = (function () {
           id: 'imm-' + (v.id || idx),
           status: 'completed',
           vaccineCode: {
-            text: v.vaccineName + ' (Dose ' + v.doseNumber + ')'
+            text: vName + dNum
           },
-          patient: { reference: patientRef, display: child.name },
-          occurrenceDateTime: v.dateGiven
+          patient: { reference: patientRef, display: child.name || 'Patient' },
+          occurrenceDateTime: v.dateGiven || todayISO()
         }
       });
     });
