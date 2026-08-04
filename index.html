@@ -30,36 +30,92 @@
     <!-- ===== Onboarding Overlay ===== -->
     <div id="onboarding-overlay" class="overlay">
       <div class="onboarding-card">
-        <h1>Welcome to Healthy Human</h1>
-        <p>Track your child's growth, vaccines, and checkups with clinical precision and warm guidance.</p>
-        <form id="onboarding-form">
-          <div class="form-group">
-            <label for="onboard-name">Child's Name</label>
-            <input type="text" id="onboard-name" required placeholder="e.g., Emma">
+        
+        <!-- Step 1: Child Profile Info -->
+        <div id="onboard-step-1" class="onboard-step active">
+          <h1>Welcome to Healthy Human</h1>
+          <p>Track your child's growth, vaccines, and checkups with clinical precision and warm guidance.</p>
+          <div class="onboard-step-indicator">Step 1 of 2: Child Details</div>
+          <form id="onboarding-form">
+            <div class="form-group">
+              <label for="onboard-name">Child's Name</label>
+              <input type="text" id="onboard-name" required placeholder="e.g., Emma">
+            </div>
+            <div class="form-group">
+              <label for="onboard-sex">Sex</label>
+              <select id="onboard-sex" required>
+                <option value="">Select...</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+              <span class="form-hint">Required — growth charts differ by sex</span>
+            </div>
+            <div class="form-group">
+              <label for="onboard-dob">Date of Birth</label>
+              <input type="date" id="onboard-dob" required>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%;">Next: Add Measurements &rarr;</button>
+          </form>
+          <div class="onboarding-divider" style="display: flex; align-items: center; text-align: center; margin: var(--space-4) 0; color: var(--text-secondary); font-size: 0.8125rem;">
+            <span style="flex: 1; border-bottom: 1px solid var(--border);"></span>
+            <span style="padding: 0 var(--space-2);">or</span>
+            <span style="flex: 1; border-bottom: 1px solid var(--border);"></span>
           </div>
-          <div class="form-group">
-            <label for="onboard-sex">Sex</label>
-            <select id="onboard-sex" required>
-              <option value="">Select...</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-            <span class="form-hint">Required — growth charts differ by sex</span>
+          <div style="text-align: center;">
+            <button type="button" class="btn-secondary" id="onboard-import-btn" style="width: 100%;">Import Profile Backup (JSON)</button>
           </div>
-          <div class="form-group">
-            <label for="onboard-dob">Date of Birth</label>
-            <input type="date" id="onboard-dob" required>
-          </div>
-          <button type="submit" class="btn-primary">Get Started</button>
-        </form>
-        <div class="onboarding-divider" style="display: flex; align-items: center; text-align: center; margin: var(--space-4) 0; color: var(--text-secondary); font-size: 0.8125rem;">
-          <span style="flex: 1; border-bottom: 1px solid var(--border);"></span>
-          <span style="padding: 0 var(--space-2);">or</span>
-          <span style="flex: 1; border-bottom: 1px solid var(--border);"></span>
         </div>
-        <div style="text-align: center;">
-          <button type="button" class="btn-secondary" id="onboard-import-btn" style="width: 100%;">Import Profile Backup (JSON)</button>
+
+        <!-- Step 2: Initial Measurements -->
+        <div id="onboard-step-2" class="onboard-step" hidden>
+          <div class="onboard-header-row">
+            <button type="button" id="onboard-back-btn" class="btn-back" title="Back to step 1">&larr; Back</button>
+            <span class="onboard-step-indicator">Step 2 of 2: Measurements</span>
+          </div>
+          <h2 class="onboard-title">Type the measurements</h2>
+          <p class="onboard-subtext">Log initial measurements for <strong id="onboard-child-name-display">your baby</strong>, or skip if you don't have them handy.</p>
+          <form id="onboard-measurements-form">
+            <div class="form-group">
+              <label for="onboard-measure-date">Date of Measurement</label>
+              <input type="date" id="onboard-measure-date">
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="onboard-weight">Weight</label>
+                <div class="input-with-unit">
+                  <input type="number" id="onboard-weight" step="0.01" min="0" placeholder="0.00">
+                  <span class="unit-label" data-imperial="lb" data-metric="kg">lb</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="onboard-height">Length / Height</label>
+                <div class="input-with-unit">
+                  <input type="number" id="onboard-height" step="0.1" min="0" placeholder="0.0">
+                  <span class="unit-label" data-imperial="in" data-metric="cm">in</span>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="onboard-head">Head Circumference <span class="optional">(optional)</span></label>
+              <div class="input-with-unit">
+                <input type="number" id="onboard-head" step="0.1" min="0" placeholder="0.0">
+                <span class="unit-label" data-imperial="in" data-metric="cm">in</span>
+              </div>
+            </div>
+            <div class="onboard-actions" style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+              <button type="submit" class="btn-primary" style="width: 100%;">Save Profile &amp; Measurements</button>
+              <button type="button" id="onboard-skip-measurements" class="btn-secondary" style="width: 100%;">i dont have measurements yet</button>
+            </div>
+          </form>
         </div>
+
+        <div class="onboard-privacy-footer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>No data is stored or sold elsewhere. It is all HIPAA compliant and secure.</span>
+        </div>
+
       </div>
     </div>
 
@@ -99,7 +155,15 @@
           <button class="unit-btn active" data-unit="imperial">lb/in</button>
           <button class="unit-btn" data-unit="metric">kg/cm</button>
         </div>
-        <button id="export-btn" class="btn-icon" title="Export Data" aria-label="Export data">
+        <button id="header-backup-btn" class="btn-backup-header-nav" title="Download JSON Data Backup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          <span>Backup JSON</span>
+        </button>
+        <button id="export-btn" class="btn-icon" title="Export Data Options (PDF / CSV)" aria-label="Export data options">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 10l4 4 4-4" />
             <line x1="10" y1="3" x2="10" y2="14" />
@@ -108,6 +172,34 @@
         </button>
       </div>
     </header>
+
+    <!-- ===== Front Page Privacy & Security Banner ===== -->
+    <div id="privacy-banner" class="privacy-banner">
+      <div class="privacy-banner-text">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" class="privacy-icon">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>No data is stored or sold elsewhere. It is all HIPAA compliant and secure.</span>
+      </div>
+      <div class="privacy-banner-actions">
+        <button id="quick-backup-btn" class="btn-banner-action btn-banner-primary" title="Download JSON Profile Backup">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Backup Profile (JSON)</span>
+        </button>
+        <button id="backup-guide-btn" class="btn-banner-action btn-banner-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+          <span>How to Prevent Data Loss</span>
+        </button>
+      </div>
+    </div>
 
     <!-- ===== Tab Navigation ===== -->
     <nav id="tab-nav" role="tablist">
@@ -410,8 +502,69 @@
       </div>
     </div>
 
+    <!-- ===== Backup & Data Protection Guide Modal ===== -->
+    <div id="backup-guide-modal" class="modal" hidden>
+      <div class="modal-backdrop"></div>
+      <div class="modal-card" style="max-width: 520px;">
+        <h2 style="display: flex; align-items: center; gap: 8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--primary); flex-shrink: 0;">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Save Your Data &amp; Prevent Data Loss
+        </h2>
+        <p class="modal-desc" style="margin-bottom: var(--space-3);">
+          Healthy Human keeps 100% of your records private on your browser. No data is stored on remote servers or sold to third parties.
+        </p>
+
+        <div class="guide-steps" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: var(--space-4);">
+          <div class="guide-step" style="display: flex; gap: 12px; background: var(--muted); padding: 12px 14px; border-radius: var(--radius-md);">
+            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem; width: 22px; flex-shrink: 0;">1</div>
+            <div>
+              <strong style="display: block; color: var(--ink); margin-bottom: 2px;">Download a JSON Backup File</strong>
+              <span style="font-size: 0.84375rem; color: var(--text-secondary);">Click <strong>Backup Profile (JSON)</strong> to save a complete copy of your growth and vaccine records to your phone, computer, or cloud storage.</span>
+            </div>
+          </div>
+
+          <div class="guide-step" style="display: flex; gap: 12px; background: var(--muted); padding: 12px 14px; border-radius: var(--radius-md);">
+            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem; width: 22px; flex-shrink: 0;">2</div>
+            <div>
+              <strong style="display: block; color: var(--ink); margin-bottom: 2px;">Save Periodically After Updates</strong>
+              <span style="font-size: 0.84375rem; color: var(--text-secondary);">Whenever you log new measurements or checkup visits, save a fresh JSON file.</span>
+            </div>
+          </div>
+
+          <div class="guide-step" style="display: flex; gap: 12px; background: var(--muted); padding: 12px 14px; border-radius: var(--radius-md);">
+            <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem; width: 22px; flex-shrink: 0;">3</div>
+            <div>
+              <strong style="display: block; color: var(--ink); margin-bottom: 2px;">Restore Anytime</strong>
+              <span style="font-size: 0.84375rem; color: var(--text-secondary);">If you clear your browser cookies or switch to a new device, click <strong>Import Profile Backup</strong> to restore all history in seconds.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions" style="display: flex; gap: var(--space-2); justify-content: space-between; align-items: center; flex-wrap: wrap;">
+          <button type="button" class="btn-primary" id="modal-backup-json-btn" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download Backup File (JSON) Now
+          </button>
+          <button type="button" class="btn-secondary" id="cancel-backup-guide">Close</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ===== Footer ===== -->
     <footer id="app-footer">
+      <div class="footer-privacy">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>No data is stored or sold elsewhere. It is all HIPAA compliant and secure.</span>
+        <button id="footer-guide-link" class="btn-link-underline">How to Prevent Data Loss</button>
+      </div>
       <p class="disclaimer">This tool tracks and compares data using standardized references — it does not provide
         medical advice. Always consult your pediatrician for guidance specific to your child.</p>
       <p class="source-footer" id="growth-source-footer">Growth data: WHO Child Growth Standards, 2006 (0–24 months) ·

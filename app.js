@@ -51,6 +51,21 @@
     applyUnitToggleUI();
   }
 
+  var pendingOnboardingChild = null;
+
+  function resetOnboardingSteps() {
+    pendingOnboardingChild = null;
+    var step1 = document.getElementById('onboard-step-1');
+    var step2 = document.getElementById('onboard-step-2');
+    if (step1) { step1.hidden = false; step1.classList.add('active'); }
+    if (step2) { step2.hidden = true; step2.classList.remove('active'); }
+
+    var form1 = document.getElementById('onboarding-form');
+    var form2 = document.getElementById('onboard-measurements-form');
+    if (form1) form1.reset();
+    if (form2) form2.reset();
+  }
+
   function applyUnitToggleUI() {
     var toggle = document.getElementById('unit-toggle');
     if (toggle) {
@@ -60,11 +75,20 @@
         btn.classList.toggle('active', isCurrent);
       });
     }
+
+    document.querySelectorAll('.unit-label').forEach(function (label) {
+      var imp = label.getAttribute('data-imperial');
+      var met = label.getAttribute('data-metric');
+      if (imp && met) {
+        label.textContent = units === 'imperial' ? imp : met;
+      }
+    });
   }
 
   // ─────────────────── Onboarding ───────────────────
 
   function showOnboarding() {
+    resetOnboardingSteps();
     var overlay = document.getElementById('onboarding-overlay');
     var appContent = document.getElementById('app-content');
     if (overlay) overlay.hidden = false;
@@ -76,6 +100,7 @@
     var appContent = document.getElementById('app-content');
     if (overlay) overlay.hidden = true;
     if (appContent) appContent.classList.remove('blurred');
+    resetOnboardingSteps();
   }
 
   // ─────────────────── Full Render ───────────────────
@@ -495,7 +520,7 @@
   // ─────────────────── Form Events ───────────────────
 
   function bindFormEvents() {
-    // Onboarding form submit
+    // Step 1: Onboarding form submit -> Go to Step 2
     var onboardingForm = document.getElementById('onboarding-form');
     if (onboardingForm) {
       onboardingForm.addEventListener('submit', function (e) {
@@ -508,14 +533,88 @@
           return;
         }
 
-        var newChild = ChildManager.addChild({
+        pendingOnboardingChild = {
           name: nameInput.value.trim(),
           sex: sexInput.value,
           dob: dobInput.value
-        });
+        };
 
+        var nameDisplay = document.getElementById('onboard-child-name-display');
+        if (nameDisplay) nameDisplay.textContent = pendingOnboardingChild.name;
+
+        var mDateInput = document.getElementById('onboard-measure-date');
+        if (mDateInput) mDateInput.value = pendingOnboardingChild.dob || todayISO();
+
+        var step1 = document.getElementById('onboard-step-1');
+        var step2 = document.getElementById('onboard-step-2');
+        if (step1) { step1.hidden = true; step1.classList.remove('active'); }
+        if (step2) { step2.hidden = false; step2.classList.add('active'); }
+      });
+    }
+
+    // Step 2: Back button
+    var onboardBackBtn = document.getElementById('onboard-back-btn');
+    if (onboardBackBtn) {
+      onboardBackBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        var step1 = document.getElementById('onboard-step-1');
+        var step2 = document.getElementById('onboard-step-2');
+        if (step1) { step1.hidden = false; step1.classList.add('active'); }
+        if (step2) { step2.hidden = true; step2.classList.remove('active'); }
+      });
+    }
+
+    // Step 2: Measurements form submit
+    var onboardMeasurementsForm = document.getElementById('onboard-measurements-form');
+    if (onboardMeasurementsForm) {
+      onboardMeasurementsForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!pendingOnboardingChild) return;
+
+        var newChild = ChildManager.addChild(pendingOnboardingChild);
         ChildManager.setActiveChild(newChild.id);
-        onboardingForm.reset();
+
+        var dateInput = document.getElementById('onboard-measure-date');
+        var weightInput = document.getElementById('onboard-weight');
+        var heightInput = document.getElementById('onboard-height');
+        var headInput = document.getElementById('onboard-head');
+
+        var weightRaw = weightInput ? parseFloat(weightInput.value) : NaN;
+        var heightRaw = heightInput ? parseFloat(heightInput.value) : NaN;
+        var headRaw = headInput ? parseFloat(headInput.value) : NaN;
+
+        var LB_TO_KG = 1 / 2.20462;
+        var IN_TO_CM = 2.54;
+
+        if (!isNaN(weightRaw) || !isNaN(heightRaw) || !isNaN(headRaw)) {
+          var weight_kg = !isNaN(weightRaw) ? (units === 'imperial' ? weightRaw * LB_TO_KG : weightRaw) : null;
+          var height_cm = !isNaN(heightRaw) ? (units === 'imperial' ? heightRaw * IN_TO_CM : heightRaw) : null;
+          var head_cm = !isNaN(headRaw) ? (units === 'imperial' ? headRaw * IN_TO_CM : headRaw) : null;
+
+          ChildManager.saveMeasurement(newChild.id, {
+            date: dateInput && dateInput.value ? dateInput.value : (newChild.dob || todayISO()),
+            weight_kg: weight_kg,
+            height_cm: height_cm,
+            head_cm: head_cm
+          });
+        }
+
+        hideOnboarding();
+        renderApp();
+        showToast(newChild.name + ' added!');
+      });
+    }
+
+    // Step 2: "i dont have measurements yet" button
+    var onboardSkipBtn = document.getElementById('onboard-skip-measurements');
+    if (onboardSkipBtn) {
+      onboardSkipBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!pendingOnboardingChild) return;
+
+        var newChild = ChildManager.addChild(pendingOnboardingChild);
+        ChildManager.setActiveChild(newChild.id);
+
         hideOnboarding();
         renderApp();
         showToast(newChild.name + ' added!');
@@ -830,6 +929,24 @@
       }
     });
 
+    // Backup & Data Protection Guide Modal
+    var backupGuideModal = document.getElementById('backup-guide-modal');
+    var backupGuideBtn = document.getElementById('backup-guide-btn');
+    var footerGuideLink = document.getElementById('footer-guide-link');
+    var cancelBackupGuide = document.getElementById('cancel-backup-guide');
+
+    function openBackupGuide() {
+      if (backupGuideModal) openModal(backupGuideModal);
+    }
+
+    if (backupGuideBtn) backupGuideBtn.addEventListener('click', openBackupGuide);
+    if (footerGuideLink) footerGuideLink.addEventListener('click', openBackupGuide);
+    if (cancelBackupGuide && backupGuideModal) {
+      cancelBackupGuide.addEventListener('click', function () {
+        closeModal(backupGuideModal);
+      });
+    }
+
     // Delete child button
     var deleteChildBtn = document.getElementById('delete-child-btn');
     if (deleteChildBtn) {
@@ -909,10 +1026,24 @@
 
   // ─────────────────── Export Events ───────────────────
 
+  function triggerJSONExport() {
+    var child = ChildManager.getActiveChild();
+    if (!child) {
+      showToast('Please create or select a child profile first.');
+      return;
+    }
+    var data = ChildManager.getChildData(child.id);
+    ExportManager.exportJSON(data, child);
+    showToast('JSON backup file downloaded!');
+  }
+
   function bindExportEvents() {
     var btnCSV = document.getElementById('export-csv');
     var btnPNG = document.getElementById('export-chart');
     var btnJSON = document.getElementById('export-json');
+    var quickBackupBtn = document.getElementById('quick-backup-btn');
+    var headerBackupBtn = document.getElementById('header-backup-btn');
+    var modalBackupJsonBtn = document.getElementById('modal-backup-json-btn');
 
     if (btnCSV) {
       btnCSV.addEventListener('click', function () {
@@ -934,15 +1065,10 @@
       });
     }
 
-    if (btnJSON) {
-      btnJSON.addEventListener('click', function () {
-        var child = ChildManager.getActiveChild();
-        if (!child) return;
-        var data = ChildManager.getChildData(child.id);
-        ExportManager.exportJSON(data, child);
-        showToast('JSON backup downloaded!');
-      });
-    }
+    if (btnJSON) btnJSON.addEventListener('click', triggerJSONExport);
+    if (quickBackupBtn) quickBackupBtn.addEventListener('click', triggerJSONExport);
+    if (headerBackupBtn) headerBackupBtn.addEventListener('click', triggerJSONExport);
+    if (modalBackupJsonBtn) modalBackupJsonBtn.addEventListener('click', triggerJSONExport);
   }
 
   // ─────────────────── Import Events ───────────────────

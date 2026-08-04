@@ -753,6 +753,84 @@ tbody td:last-child .btn-delete:hover {
   line-height: 1.6;
 }
 
+.onboard-step {
+  display: block;
+}
+
+.onboard-step[hidden] {
+  display: none;
+}
+
+.onboard-step-indicator {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-light-bg, rgba(78, 139, 124, 0.1));
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: var(--space-3);
+}
+
+.onboard-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-back:hover {
+  background: var(--muted);
+  color: var(--ink);
+}
+
+.onboard-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.onboard-subtext {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-3);
+  line-height: 1.5;
+}
+
+.onboard-privacy-footer {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-light);
+  font-size: 0.78125rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.onboard-privacy-footer svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
 .onboarding-card .form-group {
   margin-bottom: var(--space-2);
 }
@@ -861,7 +939,142 @@ tbody td:last-child .btn-delete:hover {
   margin-left: auto;
 }
 
-/* ----- Footer ----- */
+/* Nav Backup Button */
+.btn-backup-header-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-light-bg, rgba(78, 139, 124, 0.12));
+  color: var(--primary-dark, #2b564c);
+  border: 1px solid rgba(78, 139, 124, 0.3);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.btn-backup-header-nav:hover {
+  background: rgba(78, 139, 124, 0.2);
+  border-color: var(--primary);
+}
+
+.btn-backup-header-nav:active {
+  transform: scale(0.97);
+}
+
+/* Front Page Privacy Banner & Actions */
+.privacy-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface-subtle, rgba(78, 139, 124, 0.07));
+  border: 1px solid rgba(78, 139, 124, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  margin: var(--space-3) 0 var(--space-2);
+  font-size: 0.8125rem;
+  color: var(--ink-light, #2c423d);
+}
+
+.privacy-banner-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 300px;
+}
+
+.privacy-banner .privacy-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.privacy-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-banner-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-banner-primary {
+  background: var(--primary);
+  color: var(--surface);
+  border: 1px solid var(--primary);
+}
+
+.btn-banner-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-banner-secondary {
+  background: var(--surface);
+  color: var(--primary-dark, #2b564c);
+  border: 1px solid var(--border);
+}
+
+.btn-banner-secondary:hover {
+  background: var(--muted);
+  border-color: var(--primary);
+}
+
+/* Footer Privacy Note & Guide Link */
+.footer-privacy {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--primary-dark, #366358);
+  background: rgba(78, 139, 124, 0.08);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  margin-bottom: var(--space-3);
+  text-align: center;
+}
+
+.btn-link-underline {
+  background: none;
+  border: none;
+  color: var(--primary-dark, #2b564c);
+  font-family: var(--font-ui);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.btn-link-underline:hover {
+  color: var(--primary);
+}
+  margin-bottom: var(--space-3);
+}
+
+.footer-privacy svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
 #app-footer {
   text-align: center;
   padding: var(--space-5) 0 var(--space-4);
