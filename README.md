@@ -1,6 +1,6 @@
-# Healthy Human
+# Growth Log
 
-Healthy Human is a pediatric growth and health tracking web application. It helps parents and caregivers monitor child growth parameters, immunization schedules, and well-child checkup records with clinical reference standards.
+Growth Log is a pediatric growth and health tracking web application. It helps parents and caregivers monitor child growth parameters, immunization schedules, and well-child checkup records with clinical reference standards.
 
 ## Key Features
 

@@ -114,7 +114,7 @@ window.ExportManager = (function () {
     var hUnit = isImperial ? 'in' : 'cm';
 
     var rows = [];
-    rows.push(csvEscape('Healthy Human - Growth Data Export'));
+    rows.push(csvEscape('Growth Log - Growth Data Export'));
     rows.push(csvEscape('Child') + ',' + csvEscape(child.name || 'Child'));
     rows.push(csvEscape('Date of Birth') + ',' + csvEscape(dob));
     rows.push(csvEscape('Sex') + ',' + csvEscape(sex.charAt(0).toUpperCase() + sex.slice(1)));
@@ -243,11 +243,10 @@ window.ExportManager = (function () {
 
     var details = 'Child: ' + (child.name || 'Child') + '   |   DOB: ' + dob + '   |   Sex: ' + (sex.charAt(0).toUpperCase() + sex.slice(1)) + '   |   Age: ' + formatAge(ageM);
 
-    // --- Page 1: Weight Chart ---
     doc.setFont('Helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(28, 43, 51);
-    doc.text('Healthy Human — Pediatric Growth Report (Weight)', 15, 18);
+    doc.text('Growth Log — Pediatric Growth Report (Weight)', 15, 18);
 
     doc.setFont('Helvetica', 'normal');
     doc.setFontSize(11);
@@ -269,7 +268,7 @@ window.ExportManager = (function () {
     doc.setFont('Helvetica', 'bold');
     doc.setFontSize(16);
     doc.setTextColor(28, 43, 51);
-    doc.text('Healthy Human — Pediatric Growth Report (Height)', 15, 18);
+    doc.text('Growth Log — Pediatric Growth Report (Height)', 15, 18);
 
     doc.setFont('Helvetica', 'normal');
     doc.setFontSize(11);
@@ -292,7 +291,7 @@ window.ExportManager = (function () {
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(16);
       doc.setTextColor(28, 43, 51);
-      doc.text('Healthy Human — Pediatric Growth Report (Head Circ.)', 15, 18);
+      doc.text('Growth Log — Pediatric Growth Report (Head Circ.)', 15, 18);
 
       doc.setFont('Helvetica', 'normal');
       doc.setFontSize(11);
@@ -481,10 +480,10 @@ window.ExportManager = (function () {
 
     var bundle = {
       resourceType: 'Bundle',
-      id: 'healthy-human-fhir-' + (child.name || 'patient').toLowerCase().replace(/\s+/g, '-'),
+      id: 'growth-log-fhir-' + (child.name || 'patient').toLowerCase().replace(/\s+/g, '-'),
       meta: {
         lastUpdated: new Date().toISOString(),
-        source: 'Healthy Human Pediatric Health Tracker',
+        source: 'Growth Log Pediatric Health Tracker',
         profile: ['http://hl7.org/fhir/StructureDefinition/Bundle'],
         ehrCompatibility: ['Epic Systems', 'Oracle Cerner', 'Meditech Expanse', 'HL7 FHIR R4 Standard']
       },
