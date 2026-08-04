@@ -99,33 +99,30 @@ body {
   justify-content: space-between;
   background: var(--surface);
   border-bottom: 1px solid var(--border-light);
-  padding: var(--space-2) var(--space-3);
+  padding: 12px 24px;
   margin: 0 calc(-1 * var(--space-3));
-}
-
-.header-left,
-.header-center,
-.header-right {
-  display: flex;
-  align-items: center;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
   flex: 0 0 auto;
-}
-
-.header-center {
-  flex: 1 1 auto;
-  justify-content: center;
 }
 
 .header-right {
-  flex: 0 0 auto;
-  gap: var(--space-1);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  justify-content: flex-end;
+  flex: 1 1 auto;
 }
 
 .app-title {
-  font-size: 1.125rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--primary);
   letter-spacing: -0.01em;
@@ -943,15 +940,16 @@ tbody td:last-child .btn-delete:hover {
 .btn-nav-action {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   background: var(--surface);
   color: var(--text-secondary);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 6px 10px;
+  padding: 8px 14px;
   font-family: var(--font-ui);
-  font-size: 0.8125rem;
+  font-size: 0.84375rem;
   font-weight: 500;
+  height: 38px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
   white-space: nowrap;
@@ -1135,13 +1133,14 @@ tbody td:last-child .btn-delete:hover {
   }
 
   #app-header {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
     margin: 0 calc(-1 * var(--space-2));
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -1149,50 +1148,50 @@ tbody td:last-child .btn-delete:hover {
   }
 
   .header-left {
-    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 12px;
   }
 
   .app-title {
-    font-size: 1.1rem;
-  }
-
-  .header-center {
-    order: 3;
-    flex-basis: 100%;
-    margin-top: 2px;
+    font-size: 1.15rem;
   }
 
   .child-selector select {
-    width: 100%;
-    height: 44px;
-    font-size: 16px; /* Stops iOS Safari auto-zoom */
-    padding: 8px 36px 8px 12px;
+    font-size: 15px; /* Stops iOS Safari auto-zoom */
+    padding: 8px 32px 8px 12px;
+    height: 40px;
     border-radius: var(--radius-sm);
+    min-width: 130px;
   }
 
   .header-right {
-    flex: 1 1 auto;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
     align-items: center;
+    gap: 8px 10px;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   .btn-nav-action {
-    padding: 6px 10px;
-    font-size: 0.78125rem;
-    height: 36px;
+    padding: 7px 12px;
+    font-size: 0.8125rem;
+    height: 38px;
+    flex: 0 1 auto;
   }
 
   .unit-toggle {
     height: 38px;
-    padding: 2px;
+    padding: 3px;
     align-items: center;
   }
 
   .unit-btn {
-    padding: 4px 8px;
-    font-size: 0.75rem;
+    padding: 4px 10px;
+    font-size: 0.78125rem;
     height: 32px;
     font-weight: 600;
   }
