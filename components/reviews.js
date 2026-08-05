@@ -1,13 +1,15 @@
 /**
  * ReviewManager — Manages user reviews, ratings, and feedback.
  *
- * Stores user feedback locally in localStorage while providing
- * default community reviews for new visitors.
+ * Stores user feedback locally in localStorage AND syncs with
+ * Firebase Firestore so reviews are live & shared across all site visitors.
  */
 window.ReviewManager = (function () {
   'use strict';
 
   var STORAGE_KEY = 'healthy_human_reviews';
+  var remoteReviews = [];
+  var isListenerInitialized = false;
 
   var DEFAULT_REVIEWS = [
     {
@@ -44,19 +46,42 @@ window.ReviewManager = (function () {
     }
   ];
 
-  function getReviews() {
+  function getLocalReviews() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        var userReviews = JSON.parse(raw);
-        if (Array.isArray(userReviews) && userReviews.length > 0) {
-          return userReviews.concat(DEFAULT_REVIEWS);
-        }
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {
-      console.warn('ReviewManager: could not parse reviews', e);
+      console.warn('ReviewManager: could not parse local reviews', e);
     }
-    return DEFAULT_REVIEWS.slice();
+    return [];
+  }
+
+  function getReviews() {
+    var local = getLocalReviews();
+    var combined = [];
+
+    // Prioritize remote reviews from Firestore
+    if (remoteReviews.length > 0) {
+      combined = remoteReviews.concat(local);
+    } else {
+      combined = local.concat(DEFAULT_REVIEWS);
+    }
+
+    // Deduplicate by ID or identical comment
+    var seen = {};
+    var unique = [];
+    combined.forEach(function (r) {
+      var key = (r.id || '') + '_' + (r.comment || '');
+      if (!seen[key]) {
+        seen[key] = true;
+        unique.push(r);
+      }
+    });
+
+    return unique;
   }
 
   function addReview(data) {
@@ -74,13 +99,29 @@ window.ReviewManager = (function () {
       isUserSubmitted: true
     };
 
+    // Save to localStorage
     try {
-      var raw = localStorage.getItem(STORAGE_KEY);
-      var userReviews = raw ? JSON.parse(raw) : [];
+      var userReviews = getLocalReviews();
       userReviews.unshift(newReview);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(userReviews));
     } catch (e) {
-      console.error('ReviewManager: failed to save review', e);
+      console.error('ReviewManager: failed to save review locally', e);
+    }
+
+    // Save to Firebase Firestore (global for all visitors)
+    if (window.db) {
+      window.db.collection('reviews').add({
+        name: newReview.name,
+        role: newReview.role,
+        rating: newReview.rating,
+        date: newReview.date,
+        comment: newReview.comment,
+        createdAt: (typeof firebase !== 'undefined' && firebase.firestore && firebase.firestore.FieldValue)
+          ? firebase.firestore.FieldValue.serverTimestamp()
+          : new Date().toISOString()
+      }).catch(function (e) {
+        console.warn('ReviewManager: Firestore write warning (test mode rules may apply)', e);
+      });
     }
 
     if (typeof window.gtag === 'function') {
@@ -88,6 +129,40 @@ window.ReviewManager = (function () {
     }
 
     return newReview;
+  }
+
+  function initFirestoreListener(renderCallback) {
+    if (isListenerInitialized || !window.db) return;
+    isListenerInitialized = true;
+
+    try {
+      window.db.collection('reviews').onSnapshot(function (snapshot) {
+        var fetched = [];
+        snapshot.forEach(function (doc) {
+          var data = doc.data();
+          fetched.push({
+            id: doc.id,
+            name: data.name || 'Anonymous Parent',
+            role: data.role || 'Parent / Caregiver',
+            rating: data.rating || 5,
+            date: data.date || 'Recently',
+            comment: data.comment || '',
+            isRemote: true
+          });
+        });
+
+        if (fetched.length > 0) {
+          remoteReviews = fetched;
+          if (typeof renderCallback === 'function') {
+            renderCallback();
+          }
+        }
+      }, function (err) {
+        console.warn('ReviewManager: Firestore listener fallback to local', err);
+      });
+    } catch (e) {
+      console.warn('ReviewManager: Could not initialize Firestore listener', e);
+    }
   }
 
   function renderStars(rating) {
@@ -105,9 +180,14 @@ window.ReviewManager = (function () {
   function renderReviewsContainer(containerEl) {
     if (!containerEl) return;
 
+    // Start live Firestore listener on first render
+    initFirestoreListener(function () {
+      renderReviewsContainer(containerEl);
+    });
+
     var reviews = getReviews();
     var totalCount = reviews.length;
-    var sumRating = reviews.reduce(function (acc, r) { return acc + r.rating; }, 0);
+    var sumRating = reviews.reduce(function (acc, r) { return acc + (r.rating || 5); }, 0);
     var avgRating = (sumRating / totalCount).toFixed(1);
 
     var html = '' +
@@ -125,7 +205,7 @@ window.ReviewManager = (function () {
         '</div>' +
         '<div class="reviews-badges-row">' +
           '<div class="badge-item"><span class="badge-dot"></span> 100% Free & Private</div>' +
-          '<div class="badge-item"><span class="badge-dot"></span> Loved by Parents</div>' +
+          '<div class="badge-item"><span class="badge-dot"></span> Real-time Community Reviews</div>' +
           '<div class="badge-item"><span class="badge-dot"></span> Clinical Accuracy</div>' +
         '</div>' +
       '</div>' +

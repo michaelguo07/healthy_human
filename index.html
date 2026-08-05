@@ -749,6 +749,25 @@
   <script src="components/summary.js"></script>
   <script src="components/export.js"></script>
   <script src="components/share.js"></script>
+  <!-- Firebase App & Firestore SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    (function() {
+      var firebaseConfig = {
+        apiKey: "AIzaSyCxHevehLCqwUg9_dQvLs9qM5mJ5ijcBOM",
+        authDomain: "growth-log-fb895.firebaseapp.com",
+        projectId: "growth-log-fb895",
+        storageBucket: "growth-log-fb895.firebasestorage.app",
+        messagingSenderId: "1042370743737",
+        appId: "1:1042370743737:web:7e50ac79af844a938c3a68"
+      };
+      if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+        window.db = firebase.firestore();
+      }
+    })();
+  </script>
   <script src="components/reviews.js"></script>
   <script src="app.js"></script>
 
