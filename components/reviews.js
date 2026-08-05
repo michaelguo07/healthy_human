@@ -182,8 +182,16 @@ window.ReviewManager = (function () {
   function seedFirestoreReviews() {
     if (!window.db) return;
     window.db.collection('reviews').get().then(function (snapshot) {
-      if (snapshot.empty) {
-        DEFAULT_REVIEWS.forEach(function (r) {
+      var existingNames = {};
+      snapshot.forEach(function (doc) {
+        var data = doc.data();
+        if (data && data.name) {
+          existingNames[data.name.toLowerCase().trim()] = true;
+        }
+      });
+
+      DEFAULT_REVIEWS.forEach(function (r) {
+        if (!existingNames[r.name.toLowerCase().trim()]) {
           window.db.collection('reviews').add({
             name: r.name,
             role: r.role,
@@ -192,8 +200,8 @@ window.ReviewManager = (function () {
             comment: r.comment,
             createdAt: r.date + 'T12:00:00.000Z'
           });
-        });
-      }
+        }
+      });
     }).catch(function (err) {
       console.warn('ReviewManager: Firestore seed check', err);
     });
