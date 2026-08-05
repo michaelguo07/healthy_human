@@ -109,20 +109,13 @@ window.ReviewManager = (function () {
 
   function getReviews() {
     var local = getLocalReviews();
-    var combined = [];
+    var combined = remoteReviews.concat(local).concat(DEFAULT_REVIEWS);
 
-    // Prioritize remote reviews from Firestore
-    if (remoteReviews.length > 0) {
-      combined = remoteReviews.concat(local);
-    } else {
-      combined = local.concat(DEFAULT_REVIEWS);
-    }
-
-    // Deduplicate by ID or identical comment
+    // Deduplicate by normalized name and comment
     var seen = {};
     var unique = [];
     combined.forEach(function (r) {
-      var key = (r.id || '') + '_' + (r.comment || '');
+      var key = ((r.name || '') + '_' + (r.comment || '')).toLowerCase().replace(/\s+/g, '');
       if (!seen[key]) {
         seen[key] = true;
         unique.push(r);
