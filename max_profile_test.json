@@ -1,0 +1,323 @@
+{
+  "exportFormat": "healthy_human_backup",
+  "version": "1.0",
+  "exportedAt": "2026-08-05T09:00:00.000Z",
+  "child": {
+    "id": "max-test-child-1yr",
+    "name": "Max",
+    "sex": "male",
+    "dob": "2025-08-05",
+    "createdAt": "2025-08-05T10:00:00.000Z"
+  },
+  "measurements": [
+    {
+      "id": "m-birth",
+      "date": "2025-08-05",
+      "weight_kg": 3.5,
+      "height_cm": 50.0,
+      "head_cm": 35.0,
+      "createdAt": "2025-08-05T10:00:00.000Z"
+    },
+    {
+      "id": "m-1m",
+      "date": "2025-09-08",
+      "weight_kg": 4.5,
+      "height_cm": 54.5,
+      "head_cm": 37.3,
+      "createdAt": "2025-09-08T10:00:00.000Z"
+    },
+    {
+      "id": "m-2m",
+      "date": "2025-10-06",
+      "weight_kg": 5.6,
+      "height_cm": 58.4,
+      "head_cm": 39.1,
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "m-4m",
+      "date": "2025-12-08",
+      "weight_kg": 7.0,
+      "height_cm": 63.8,
+      "head_cm": 41.9,
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "m-6m",
+      "date": "2026-02-09",
+      "weight_kg": 7.9,
+      "height_cm": 67.6,
+      "head_cm": 43.3,
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "m-9m",
+      "date": "2026-05-07",
+      "weight_kg": 8.9,
+      "height_cm": 72.0,
+      "head_cm": 45.0,
+      "createdAt": "2026-05-07T10:00:00.000Z"
+    },
+    {
+      "id": "m-12m",
+      "date": "2026-08-05",
+      "weight_kg": 9.6,
+      "height_cm": 75.7,
+      "head_cm": 46.1,
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    }
+  ],
+  "vaccines": [
+    {
+      "id": "v-hepb-1",
+      "vaccineId": "HepB",
+      "vaccineName": "Hepatitis B",
+      "doseNumber": 1,
+      "dateGiven": "2025-08-05",
+      "createdAt": "2025-08-05T10:00:00.000Z"
+    },
+    {
+      "id": "v-hepb-2",
+      "vaccineId": "HepB",
+      "vaccineName": "Hepatitis B",
+      "doseNumber": 2,
+      "dateGiven": "2025-09-08",
+      "createdAt": "2025-09-08T10:00:00.000Z"
+    },
+    {
+      "id": "v-rv-1",
+      "vaccineId": "RV",
+      "vaccineName": "Rotavirus",
+      "doseNumber": 1,
+      "dateGiven": "2025-10-06",
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "v-dtap-1",
+      "vaccineId": "DTaP",
+      "vaccineName": "Diphtheria, Tetanus & Pertussis",
+      "doseNumber": 1,
+      "dateGiven": "2025-10-06",
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "v-hib-1",
+      "vaccineId": "Hib",
+      "vaccineName": "Haemophilus influenzae type b",
+      "doseNumber": 1,
+      "dateGiven": "2025-10-06",
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "v-pcv-1",
+      "vaccineId": "PCV15",
+      "vaccineName": "Pneumococcal Conjugate",
+      "doseNumber": 1,
+      "dateGiven": "2025-10-06",
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "v-ipv-1",
+      "vaccineId": "IPV",
+      "vaccineName": "Inactivated Poliovirus",
+      "doseNumber": 1,
+      "dateGiven": "2025-10-06",
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "v-rv-2",
+      "vaccineId": "RV",
+      "vaccineName": "Rotavirus",
+      "doseNumber": 2,
+      "dateGiven": "2025-12-08",
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "v-dtap-2",
+      "vaccineId": "DTaP",
+      "vaccineName": "Diphtheria, Tetanus & Pertussis",
+      "doseNumber": 2,
+      "dateGiven": "2025-12-08",
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "v-hib-2",
+      "vaccineId": "Hib",
+      "vaccineName": "Haemophilus influenzae type b",
+      "doseNumber": 2,
+      "dateGiven": "2025-12-08",
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "v-pcv-2",
+      "vaccineId": "PCV15",
+      "vaccineName": "Pneumococcal Conjugate",
+      "doseNumber": 2,
+      "dateGiven": "2025-12-08",
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "v-ipv-2",
+      "vaccineId": "IPV",
+      "vaccineName": "Inactivated Poliovirus",
+      "doseNumber": 2,
+      "dateGiven": "2025-12-08",
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "v-hepb-3",
+      "vaccineId": "HepB",
+      "vaccineName": "Hepatitis B",
+      "doseNumber": 3,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-rv-3",
+      "vaccineId": "RV",
+      "vaccineName": "Rotavirus",
+      "doseNumber": 3,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-dtap-3",
+      "vaccineId": "DTaP",
+      "vaccineName": "Diphtheria, Tetanus & Pertussis",
+      "doseNumber": 3,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-hib-3",
+      "vaccineId": "Hib",
+      "vaccineName": "Haemophilus influenzae type b",
+      "doseNumber": 3,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-pcv-3",
+      "vaccineId": "PCV15",
+      "vaccineName": "Pneumococcal Conjugate",
+      "doseNumber": 3,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-covid-1",
+      "vaccineId": "COVID19",
+      "vaccineName": "COVID-19 Vaccine",
+      "doseNumber": 1,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-flu-1",
+      "vaccineId": "Influenza",
+      "vaccineName": "Influenza (Annual)",
+      "doseNumber": 1,
+      "dateGiven": "2026-02-09",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "v-ipv-3",
+      "vaccineId": "IPV",
+      "vaccineName": "Inactivated Poliovirus",
+      "doseNumber": 3,
+      "dateGiven": "2026-05-07",
+      "createdAt": "2026-05-07T10:00:00.000Z"
+    },
+    {
+      "id": "v-mmr-1",
+      "vaccineId": "MMR",
+      "vaccineName": "Measles, Mumps & Rubella",
+      "doseNumber": 1,
+      "dateGiven": "2026-08-05",
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    },
+    {
+      "id": "v-var-1",
+      "vaccineId": "Varicella",
+      "vaccineName": "Varicella (Chickenpox)",
+      "doseNumber": 1,
+      "dateGiven": "2026-08-05",
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    },
+    {
+      "id": "v-hepa-1",
+      "vaccineId": "HepA",
+      "vaccineName": "Hepatitis A",
+      "doseNumber": 1,
+      "dateGiven": "2026-08-05",
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    },
+    {
+      "id": "v-hib-4",
+      "vaccineId": "Hib",
+      "vaccineName": "Haemophilus influenzae type b",
+      "doseNumber": 4,
+      "dateGiven": "2026-08-05",
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    },
+    {
+      "id": "v-pcv-4",
+      "vaccineId": "PCV15",
+      "vaccineName": "Pneumococcal Conjugate",
+      "doseNumber": 4,
+      "dateGiven": "2026-08-05",
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    }
+  ],
+  "checkups": [
+    {
+      "id": "c-nb",
+      "visitLabel": "Newborn (3–5 days)",
+      "date": "2025-08-08",
+      "notes": "Newborn health assessment complete. Bilirubin normal, birth weight recovery on track. Passed hearing screen.",
+      "createdAt": "2025-08-08T10:00:00.000Z"
+    },
+    {
+      "id": "c-1m",
+      "visitLabel": "1 Month",
+      "date": "2025-09-08",
+      "notes": "1-month checkup. Weight gain on 50th percentile trajectory. Makes eye contact and tracks objects.",
+      "createdAt": "2025-09-08T10:00:00.000Z"
+    },
+    {
+      "id": "c-2m",
+      "visitLabel": "2 Months",
+      "date": "2025-10-06",
+      "notes": "2-month well-child visit. Coos and smiles, lifts head during tummy time. Given 2-month vaccines (HepB #2, Rota #1, DTaP #1, Hib #1, PCV #1, IPV #1).",
+      "createdAt": "2025-10-06T10:00:00.000Z"
+    },
+    {
+      "id": "c-4m",
+      "visitLabel": "4 Months",
+      "date": "2025-12-08",
+      "notes": "4-month checkup. Rolls tummy to back, grasps rattle, giggles. 4-month vaccines administered (Rota #2, DTaP #2, Hib #2, PCV #2, IPV #2).",
+      "createdAt": "2025-12-08T10:00:00.000Z"
+    },
+    {
+      "id": "c-6m",
+      "visitLabel": "6 Months",
+      "date": "2026-02-09",
+      "notes": "6-month checkup. Sits with support, transfers toys between hands. Started solid food purees. Received 6-month immunizations (HepB #3, Rota #3, DTaP #3, Hib #3, PCV #3, COVID-19 #1, Flu #1).",
+      "createdAt": "2026-02-09T10:00:00.000Z"
+    },
+    {
+      "id": "c-9m",
+      "visitLabel": "9 Months",
+      "date": "2026-05-07",
+      "notes": "9-month checkup. Sits independently, crawls, pulls to stand. Responds to name and plays peek-a-boo. Administered IPV #3.",
+      "createdAt": "2026-05-07T10:00:00.000Z"
+    },
+    {
+      "id": "c-12m",
+      "visitLabel": "12 Months",
+      "date": "2026-08-05",
+      "notes": "1-year milestone checkup! Standing unassisted and taking initial steps. Saying 'mama' and 'dada'. Transitioning to whole milk. Administered 12-month vaccines (MMR #1, Varicella #1, HepA #1, Hib #4, PCV #4).",
+      "createdAt": "2026-08-05T10:00:00.000Z"
+    }
+  ]
+}

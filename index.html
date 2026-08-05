@@ -192,6 +192,19 @@
           </svg>
           <span>Export Reports</span>
         </button>
+        <button id="open-feedback-btn" class="btn-nav-action" title="Send Private Feedback" aria-label="Send Feedback">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span>Feedback</span>
+        </button>
+        <button id="about-creator-btn" class="btn-nav-action btn-nav-creator" title="About the Creator" aria-label="About Creator">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span>About Creator</span>
+        </button>
       </div>
     </header>
 
@@ -711,6 +724,91 @@
       </div>
     </div>
 
+    <!-- ===== About Creator Popup Modal ===== -->
+    <div id="about-creator-modal" class="modal" hidden>
+      <div class="modal-backdrop" id="about-creator-backdrop"></div>
+      <div class="modal-card creator-modal-card">
+        <div class="modal-header creator-modal-header">
+          <span class="creator-badge">Creator Profile</span>
+          <button class="modal-close-btn" id="close-about-creator-modal">&times;</button>
+        </div>
+        <div class="modal-body creator-modal-body">
+          <div class="creator-avatar-wrap">
+            <img src="michael_guo.jpg" alt="Michael Guo" class="creator-avatar">
+          </div>
+          <h3 class="creator-name">Michael Guo</h3>
+          <p class="creator-title">UT Austin • Data Science &amp; Finance</p>
+          <p class="creator-bio">
+            Hi! I'm Michael Guo, a rising sophomore at UT Austin studying Data Science and Finance. I enjoy building projects that have a meaningful impact on families and everyday lives.
+          </p>
+          <div class="creator-contact-links">
+            <a href="mailto:mg.michaelguo@gmail.com" class="creator-email-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>Contact me at mg.michaelguo@gmail.com</span>
+            </a>
+            <a href="https://instagram.com/guobropro" target="_blank" rel="noopener noreferrer" class="creator-ig-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+              </svg>
+              <span>Follow @guobropro on Instagram</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Private Feedback Modal ===== -->
+    <div id="feedback-modal" class="modal" hidden>
+      <div class="modal-backdrop" id="feedback-backdrop"></div>
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Send Feedback to Creator</h3>
+          <button class="modal-close-btn" id="close-feedback-modal">&times;</button>
+        </div>
+        <form id="feedback-form">
+          <div class="modal-body" style="display: flex; flex-direction: column; gap: 12px;">
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin: 0;">
+              Your feedback is private and sent to Michael only. It will not be displayed on the site.
+            </p>
+            <div class="form-group">
+              <label for="feedback-category">Feedback Type</label>
+              <select id="feedback-category">
+                <option value="General Suggestion">General Suggestion</option>
+                <option value="Feature Request">Feature Request</option>
+                <option value="Bug Report">Bug Report</option>
+                <option value="Praise">Praise</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="feedback-name">Your Name <span class="optional">(optional)</span></label>
+                <input type="text" id="feedback-name" placeholder="e.g. Alex M.">
+              </div>
+              <div class="form-group">
+                <label for="feedback-contact">Email or Contact <span class="optional">(optional)</span></label>
+                <input type="text" id="feedback-contact" placeholder="For follow-up responses">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="feedback-message">Message</label>
+              <textarea id="feedback-message" required rows="4" placeholder="Share your thoughts, suggestions, or issues..."></textarea>
+            </div>
+            <div id="feedback-status-msg" style="display: none; padding: 10px; border-radius: 6px; font-size: 0.875rem;"></div>
+          </div>
+          <div class="modal-footer" style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button type="button" class="btn-secondary" id="cancel-feedback-modal">Cancel</button>
+            <button type="submit" class="btn-primary" id="submit-feedback-btn">Send Private Feedback</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- ===== Footer ===== -->
     <footer id="app-footer">
       <div class="footer-privacy">
@@ -774,6 +872,7 @@
     })();
   </script>
   <script src="components/reviews.js"></script>
+  <script src="components/feedback.js"></script>
   <script src="app.js"></script>
 
   <input type="file" id="global-import-input" accept=".json" style="display: none;">

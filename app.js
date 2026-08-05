@@ -1113,6 +1113,105 @@
       });
     }
 
+    // About Creator Modal
+    var aboutCreatorBtn = document.getElementById('about-creator-btn');
+    var aboutCreatorModal = document.getElementById('about-creator-modal');
+    var closeAboutCreator = document.getElementById('close-about-creator-modal');
+
+    if (aboutCreatorBtn && aboutCreatorModal) {
+      aboutCreatorBtn.addEventListener('click', function () {
+        openModal(aboutCreatorModal);
+      });
+    }
+
+    if (closeAboutCreator && aboutCreatorModal) {
+      closeAboutCreator.addEventListener('click', function () {
+        closeModal(aboutCreatorModal);
+      });
+    }
+
+    // Private Feedback Modal
+    var openFeedbackBtn = document.getElementById('open-feedback-btn');
+    var feedbackModal = document.getElementById('feedback-modal');
+    var closeFeedbackModal = document.getElementById('close-feedback-modal');
+    var cancelFeedbackModal = document.getElementById('cancel-feedback-modal');
+    var feedbackForm = document.getElementById('feedback-form');
+    var feedbackStatusMsg = document.getElementById('feedback-status-msg');
+
+    if (openFeedbackBtn && feedbackModal) {
+      openFeedbackBtn.addEventListener('click', function () {
+        if (feedbackStatusMsg) feedbackStatusMsg.style.display = 'none';
+        openModal(feedbackModal);
+      });
+    }
+
+    if (closeFeedbackModal && feedbackModal) {
+      closeFeedbackModal.addEventListener('click', function () {
+        closeModal(feedbackModal);
+      });
+    }
+
+    if (cancelFeedbackModal && feedbackModal) {
+      cancelFeedbackModal.addEventListener('click', function () {
+        closeModal(feedbackModal);
+      });
+    }
+
+    if (feedbackForm) {
+      feedbackForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var category = document.getElementById('feedback-category').value;
+        var name = document.getElementById('feedback-name').value;
+        var contact = document.getElementById('feedback-contact').value;
+        var message = document.getElementById('feedback-message').value;
+
+        if (!message || !message.trim()) return;
+
+        var submitBtn = document.getElementById('submit-feedback-btn');
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Sending...';
+        }
+
+        FeedbackManager.sendFeedback({
+          category: category,
+          name: name,
+          contact: contact,
+          message: message
+        }).then(function () {
+          if (feedbackStatusMsg) {
+            feedbackStatusMsg.style.display = 'block';
+            feedbackStatusMsg.style.background = '#e6f4ea';
+            feedbackStatusMsg.style.color = '#137333';
+            feedbackStatusMsg.style.border = '1px solid #ceead6';
+            feedbackStatusMsg.textContent = 'Thank you! Your feedback has been sent directly to Michael Guo.';
+          }
+          showToast('Feedback sent directly to creator!');
+          feedbackForm.reset();
+          setTimeout(function () {
+            closeModal(feedbackModal);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Send Private Feedback';
+            }
+          }, 1500);
+        }).catch(function (err) {
+          console.error('Feedback submission error:', err);
+          if (feedbackStatusMsg) {
+            feedbackStatusMsg.style.display = 'block';
+            feedbackStatusMsg.style.background = '#fce8e6';
+            feedbackStatusMsg.style.color = '#c5221f';
+            feedbackStatusMsg.style.border = '1px solid #fad2cf';
+            feedbackStatusMsg.textContent = 'Could not send feedback. Please try again.';
+          }
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Send Private Feedback';
+          }
+        });
+      });
+    }
+
     // Delete child button
     var deleteChildBtn = document.getElementById('delete-child-btn');
     if (deleteChildBtn) {
