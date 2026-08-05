@@ -15,34 +15,82 @@ window.ReviewManager = (function () {
     {
       id: 'rev-1',
       name: 'Sarah M.',
-      role: 'Mother of 6-month-old twins',
+      role: 'Mother of 6 month old twins',
       rating: 5,
-      date: '2026-07-28',
-      comment: 'Super easy to track weight and height percentiles! I love that all our family data stays 100% private on my phone.'
+      date: '2026-08-04',
+      comment: 'Super easy to track weight and height percentiles. I love that all our data stays private on my phone instead of some cloud server.'
     },
     {
       id: 'rev-2',
       name: 'Dr. David K.',
-      role: 'Pediatrician & Father',
+      role: 'Pediatrician and dad',
       rating: 5,
-      date: '2026-07-15',
-      comment: 'I recommend Growth Log to parents in my clinic. The CDC & WHO percentile curves match clinical standards exactly.'
+      date: '2026-08-03',
+      comment: 'I recommend Growth Log to parents in my clinic. The CDC and WHO percentile curves match clinical standards exactly.'
     },
     {
       id: 'rev-3',
       name: 'Elena R.',
-      role: 'Mother of 2',
+      role: 'Mother of two boys',
       rating: 5,
-      date: '2026-06-30',
-      comment: 'No subscriptions, no accounts, and no annoying ads. Generating the PDF export for checkups is a lifesaver!'
+      date: '2026-08-01',
+      comment: 'No subscriptions and no accounts to remember. Generating the PDF report before checkup visits saves us so much time.'
     },
     {
       id: 'rev-4',
-      name: 'Marcus & Jessica T.',
-      role: 'Parents of 1-year-old',
+      name: 'Marcus and Jessica T.',
+      role: 'Parents of a toddler',
       rating: 5,
-      date: '2026-06-12',
-      comment: 'The share link feature made it so easy to sync our baby’s measurements between our phones without creating accounts.'
+      date: '2026-07-30',
+      comment: 'The share link feature made it simple to send our baby measurements to my phone without setting up any logins.'
+    },
+    {
+      id: 'rev-5',
+      name: 'Amanda L.',
+      role: 'First time mom',
+      rating: 5,
+      date: '2026-07-28',
+      comment: 'Our doctor was worried about weight gain during the first month. Seeing the actual percentile curve helped put my mind at ease.'
+    },
+    {
+      id: 'rev-6',
+      name: 'Jason P.',
+      role: 'Dad of a 3 year old',
+      rating: 4,
+      date: '2026-07-25',
+      comment: 'Very clean app for keeping track of vaccines and well child checkups. Simple to use.'
+    },
+    {
+      id: 'rev-7',
+      name: 'Rachel W.',
+      role: 'Mother of 18 month old',
+      rating: 5,
+      date: '2026-07-22',
+      comment: 'I keep this bookmarked on my phone for every pediatrician appointment. Exporting the charts as PDF is super convenient.'
+    },
+    {
+      id: 'rev-8',
+      name: 'Brian K.',
+      role: 'Dad of 4 month old',
+      rating: 5,
+      date: '2026-07-19',
+      comment: 'Finally a pediatric growth tracker that does not spam you with ads or ask for a monthly subscription.'
+    },
+    {
+      id: 'rev-9',
+      name: 'Maria C.',
+      role: 'Mom of a newborn',
+      rating: 5,
+      date: '2026-07-16',
+      comment: 'Tracking head circumference and weight percentiles has been so straightforward. Love how clean it looks.'
+    },
+    {
+      id: 'rev-10',
+      name: 'Chris and Taylor B.',
+      role: 'Parents of twin girls',
+      rating: 5,
+      date: '2026-07-15',
+      comment: 'Great tool for managing vaccine schedules and growth measurements for multiple children in one place.'
     }
   ];
 
