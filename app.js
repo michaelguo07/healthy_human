@@ -972,6 +972,24 @@
       });
     }
 
+    var anonCheckbox = document.getElementById('review-anonymous-checkbox');
+    var nameInput = document.getElementById('review-name');
+
+    if (anonCheckbox && nameInput) {
+      anonCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+          nameInput.setAttribute('data-saved-name', nameInput.value);
+          nameInput.value = 'Anonymous Parent';
+          nameInput.readOnly = true;
+        } else {
+          var saved = nameInput.getAttribute('data-saved-name') || '';
+          nameInput.value = saved === 'Anonymous Parent' ? '' : saved;
+          nameInput.readOnly = false;
+          nameInput.focus();
+        }
+      });
+    }
+
     if (reviewForm) {
       reviewForm.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -979,20 +997,24 @@
         var roleVal = document.getElementById('review-role').value;
         var ratingVal = document.getElementById('review-rating-val').value;
         var commentVal = document.getElementById('review-comment').value;
+        var isAnon = anonCheckbox && anonCheckbox.checked;
 
-        if (!nameVal.trim() || !commentVal.trim()) {
-          showFormError(reviewForm, 'Please fill in your name and review comment.');
+        var finalName = (isAnon || !nameVal.trim()) ? 'Anonymous Parent' : nameVal.trim();
+
+        if (!commentVal.trim()) {
+          showFormError(reviewForm, 'Please fill in your review comment.');
           return;
         }
 
         ReviewManager.addReview({
-          name: nameVal,
+          name: finalName,
           role: roleVal,
           rating: ratingVal,
           comment: commentVal
         });
 
         reviewForm.reset();
+        if (nameInput) nameInput.readOnly = false;
         closeModal(reviewModal);
         renderReviewsTab();
         showToast('Thank you for leaving a review!');
