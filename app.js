@@ -41,6 +41,8 @@
     bindImportEvents();
     bindChildSelector();
     bindChartControls();
+
+    checkIncomingSharePayload();
   }
 
   // ─────────────────── Settings ───────────────────
@@ -128,6 +130,12 @@
       case 'checkups':
         renderCheckupTab(child);
         break;
+      case 'summary':
+        renderSummaryTab(child);
+        break;
+      case 'reviews':
+        renderReviewsTab();
+        break;
     }
   }
 
@@ -199,7 +207,17 @@
       panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
     });
 
+    if (tabName === 'reviews') {
+      renderReviewsTab();
+    }
     renderCurrentTab();
+  }
+
+  function renderReviewsTab() {
+    var container = document.getElementById('reviews-container');
+    if (container && window.ReviewManager) {
+      ReviewManager.renderReviewsContainer(container);
+    }
   }
 
   // ─────────────────── Growth Tab ───────────────────
@@ -859,6 +877,115 @@
       });
     }
 
+    // Share Profile Modal
+    var shareBtn = document.getElementById('share-profile-btn');
+    var shareModal = document.getElementById('share-modal');
+    var closeShare = document.getElementById('close-share-modal');
+    var cancelShare = document.getElementById('cancel-share-modal');
+    var copyBtn = document.getElementById('copy-share-url-btn');
+
+    if (shareBtn && shareModal) {
+      shareBtn.addEventListener('click', function () {
+        var activeChild = ChildManager.getActiveChild();
+        if (!activeChild) {
+          showToast('Please add a child profile first.');
+          return;
+        }
+        var shareUrl = ShareManager.generateShareUrl(activeChild.id);
+        if (shareUrl) {
+          var urlInput = document.getElementById('share-url-input');
+          var childNameEl = document.getElementById('share-child-name');
+          if (urlInput) urlInput.value = shareUrl;
+          if (childNameEl) childNameEl.textContent = activeChild.name;
+          var feedbackMsg = document.getElementById('copy-feedback-msg');
+          if (feedbackMsg) feedbackMsg.style.display = 'none';
+          openModal(shareModal);
+        }
+      });
+    }
+
+    if (closeShare && shareModal) closeShare.addEventListener('click', function () { closeModal(shareModal); });
+    if (cancelShare && shareModal) cancelShare.addEventListener('click', function () { closeModal(shareModal); });
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        var urlInput = document.getElementById('share-url-input');
+        if (urlInput && urlInput.value) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(urlInput.value).then(function () {
+              var feedbackMsg = document.getElementById('copy-feedback-msg');
+              if (feedbackMsg) feedbackMsg.style.display = 'block';
+              showToast('Link copied to clipboard!');
+            }).catch(function () {
+              fallbackCopy(urlInput);
+            });
+          } else {
+            fallbackCopy(urlInput);
+          }
+        }
+      });
+    }
+
+    function fallbackCopy(inputEl) {
+      inputEl.select();
+      document.execCommand('copy');
+      var feedbackMsg = document.getElementById('copy-feedback-msg');
+      if (feedbackMsg) feedbackMsg.style.display = 'block';
+      showToast('Link copied!');
+    }
+
+    // Leave a Review Modal
+    var reviewModal = document.getElementById('review-modal');
+    var reviewForm = document.getElementById('review-form');
+    var closeReview = document.getElementById('close-review-modal');
+    var cancelReview = document.getElementById('cancel-review-modal');
+
+    if (closeReview && reviewModal) closeReview.addEventListener('click', function () { closeModal(reviewModal); });
+    if (cancelReview && reviewModal) cancelReview.addEventListener('click', function () { closeModal(reviewModal); });
+
+    var starContainer = document.getElementById('star-rating-select');
+    if (starContainer) {
+      starContainer.addEventListener('click', function (e) {
+        var star = e.target.closest('span[data-star]');
+        if (!star) return;
+        var val = parseInt(star.getAttribute('data-star'), 10);
+        var inputVal = document.getElementById('review-rating-val');
+        if (inputVal) inputVal.value = val;
+        var stars = starContainer.querySelectorAll('span');
+        stars.forEach(function (s, idx) {
+          if (idx < val) s.classList.add('active');
+          else s.classList.remove('active');
+        });
+      });
+    }
+
+    if (reviewForm) {
+      reviewForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var nameVal = document.getElementById('review-name').value;
+        var roleVal = document.getElementById('review-role').value;
+        var ratingVal = document.getElementById('review-rating-val').value;
+        var commentVal = document.getElementById('review-comment').value;
+
+        if (!nameVal.trim() || !commentVal.trim()) {
+          showFormError(reviewForm, 'Please fill in your name and review comment.');
+          return;
+        }
+
+        ReviewManager.addReview({
+          name: nameVal,
+          role: roleVal,
+          rating: ratingVal,
+          comment: commentVal
+        });
+
+        reviewForm.reset();
+        closeModal(reviewModal);
+        renderReviewsTab();
+        showToast('Thank you for leaving a review!');
+      });
+    }
+
     // Vaccine modal
     var vaxModal = document.getElementById('vaccine-modal');
     var cancelVax = document.getElementById('cancel-vax-modal');
@@ -1235,6 +1362,48 @@
         if (toast.parentNode) toast.parentNode.removeChild(toast);
       }, 300);
     }, 2500);
+  }
+
+  function checkIncomingSharePayload() {
+    if (!window.ShareManager) return;
+    var payload = ShareManager.getIncomingPayload();
+    if (!payload) return;
+
+    var importModal = document.getElementById('import-share-modal');
+    var childNameEl = document.getElementById('import-share-child-name');
+    var confirmBtn = document.getElementById('confirm-import-share-btn');
+    var cancelBtn = document.getElementById('cancel-import-share-btn');
+    var closeBtn = document.getElementById('close-import-share-modal');
+
+    if (childNameEl && payload.child && payload.child.name) {
+      childNameEl.textContent = payload.child.name;
+    }
+
+    if (importModal) {
+      openModal(importModal);
+    }
+
+    function cleanup() {
+      closeModal(importModal);
+      ShareManager.clearShareUrlParam();
+    }
+
+    if (cancelBtn) cancelBtn.onclick = cleanup;
+    if (closeBtn) closeBtn.onclick = cleanup;
+
+    if (confirmBtn) {
+      confirmBtn.onclick = function () {
+        try {
+          var importedChild = ShareManager.importPayload(payload);
+          cleanup();
+          hideOnboarding();
+          renderApp();
+          showToast(importedChild.name + '\'s profile imported successfully!');
+        } catch (e) {
+          alert('Could not import profile: ' + e.message);
+        }
+      };
+    }
   }
 
 })();
