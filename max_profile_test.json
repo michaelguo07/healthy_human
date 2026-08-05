@@ -19,12 +19,28 @@
       "createdAt": "2025-08-05T10:00:00.000Z"
     },
     {
-      "id": "m-1m",
-      "date": "2025-09-08",
-      "weight_kg": 4.5,
-      "height_cm": 54.5,
-      "head_cm": 37.3,
-      "createdAt": "2025-09-08T10:00:00.000Z"
+      "id": "m-2w",
+      "date": "2025-08-19",
+      "weight_kg": 3.7,
+      "height_cm": 52.0,
+      "head_cm": 36.0,
+      "createdAt": "2025-08-19T10:00:00.000Z"
+    },
+    {
+      "id": "m-4w",
+      "date": "2025-09-02",
+      "weight_kg": 4.3,
+      "height_cm": 54.0,
+      "head_cm": 37.1,
+      "createdAt": "2025-09-02T10:00:00.000Z"
+    },
+    {
+      "id": "m-6w",
+      "date": "2025-09-16",
+      "weight_kg": 4.9,
+      "height_cm": 56.1,
+      "head_cm": 38.0,
+      "createdAt": "2025-09-16T10:00:00.000Z"
     },
     {
       "id": "m-2m",
