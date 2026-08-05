@@ -305,21 +305,7 @@ window.ReviewManager = (function () {
           }
         }
       }, function (err) {
-        console.warn('ReviewManager: Firestore listener fallback to local', err);
-      });
-    } catch (e) {
-      console.warn('ReviewManager: Could not initialize Firestore listener', e);
-    }
-  }
-
-        if (fetched.length > 0) {
-          remoteReviews = fetched;
-          if (typeof renderCallback === 'function') {
-            renderCallback();
-          }
-        }
-      }, function (err) {
-        console.warn('ReviewManager: Firestore listener fallback to local', err);
+        console.warn('ReviewManager: Firestore listener error', err);
       });
     } catch (e) {
       console.warn('ReviewManager: Could not initialize Firestore listener', e);

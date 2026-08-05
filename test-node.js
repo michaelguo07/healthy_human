@@ -49,7 +49,9 @@ var files = [
   'data/vaccines.js',
   'calc/growth.js',
   'calc/vaccines.js',
-  'components/export.js'
+  'components/export.js',
+  'components/share.js',
+  'components/reviews.js'
 ];
 
 // Load all files
