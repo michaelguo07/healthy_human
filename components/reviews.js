@@ -107,9 +107,25 @@ window.ReviewManager = (function () {
     return [];
   }
 
+  function normalizeDate(dateStr) {
+    if (!dateStr) return getTodayLocalISO();
+    var today = getTodayLocalISO();
+    if (dateStr > today) {
+      return today;
+    }
+    return dateStr;
+  }
+
   function getReviews() {
     var local = getLocalReviews();
-    local.forEach(function (r) { r.isUserSubmitted = true; });
+    local.forEach(function (r) {
+      r.isUserSubmitted = true;
+      r.date = normalizeDate(r.date);
+    });
+
+    remoteReviews.forEach(function (r) {
+      r.date = normalizeDate(r.date);
+    });
 
     var combined = local.concat(remoteReviews).concat(DEFAULT_REVIEWS);
 
@@ -230,14 +246,24 @@ window.ReviewManager = (function () {
     try {
       window.db.collection('reviews').onSnapshot(function (snapshot) {
         var fetched = [];
+        var today = getTodayLocalISO();
+
         snapshot.forEach(function (doc) {
           var data = doc.data();
+          var itemDate = data.date || 'Recently';
+
+          // Auto-correct future UTC dates in Firestore
+          if (itemDate > today) {
+            itemDate = today;
+            doc.ref.update({ date: today }).catch(function () {});
+          }
+
           fetched.push({
             id: doc.id,
             name: data.name || 'Anonymous Parent',
             role: data.role || 'Parent / Caregiver',
             rating: data.rating || 5,
-            date: data.date || 'Recently',
+            date: itemDate,
             comment: data.comment || '',
             isRemote: true
           });
