@@ -155,7 +155,13 @@ window.ReviewManager = (function () {
     if (btn) {
       btn.addEventListener('click', function () {
         var modal = document.getElementById('review-modal');
-        if (modal) modal.classList.add('active');
+        if (modal) {
+          modal.hidden = false;
+          modal.setAttribute('aria-hidden', 'false');
+          document.body.classList.add('modal-open');
+          var firstInput = modal.querySelector('input, select, textarea');
+          if (firstInput) setTimeout(function () { firstInput.focus(); }, 100);
+        }
       });
     }
   }

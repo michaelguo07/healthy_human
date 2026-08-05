@@ -220,6 +220,19 @@
     }
   }
 
+  function renderSummaryTab(child) {
+    var container = document.getElementById('summary-content');
+    if (!container || !child) return;
+    var data = ChildManager.getChildData(child.id);
+    var measurements = data.measurements || [];
+    var latest = measurements.length > 0 ? measurements[measurements.length - 1] : null;
+    var previous = measurements.length > 1 ? measurements[measurements.length - 2] : null;
+
+    if (window.Summary) {
+      container.innerHTML = Summary.generateGrowthSummary(child.name, latest, child, previous);
+    }
+  }
+
   // ─────────────────── Growth Tab ───────────────────
 
   function renderGrowthTab(child) {
