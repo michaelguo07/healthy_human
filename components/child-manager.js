@@ -98,6 +98,11 @@ window.ChildManager = (function () {
       store.activeChildId = child.id;
     }
     save(store);
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'add_child_profile', {
+        sex: child.sex
+      });
+    }
     return child;
   }
 
@@ -151,6 +156,9 @@ window.ChildManager = (function () {
     };
     store.measurements[childId].push(record);
     save(store);
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'add_measurement');
+    }
     return record;
   }
 
