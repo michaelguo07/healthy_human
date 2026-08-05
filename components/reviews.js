@@ -109,7 +109,9 @@ window.ReviewManager = (function () {
 
   function getReviews() {
     var local = getLocalReviews();
-    var combined = remoteReviews.concat(local).concat(DEFAULT_REVIEWS);
+    local.forEach(function (r) { r.isUserSubmitted = true; });
+
+    var combined = local.concat(remoteReviews).concat(DEFAULT_REVIEWS);
 
     // Deduplicate by normalized name and comment
     var seen = {};
@@ -120,6 +122,15 @@ window.ReviewManager = (function () {
         seen[key] = true;
         unique.push(r);
       }
+    });
+
+    // Sort: user submitted reviews first, then by date descending (newest first)
+    unique.sort(function (a, b) {
+      if (a.isUserSubmitted && !b.isUserSubmitted) return -1;
+      if (!a.isUserSubmitted && b.isUserSubmitted) return 1;
+      var dateA = String(a.date || '');
+      var dateB = String(b.date || '');
+      return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
     });
 
     return unique;
