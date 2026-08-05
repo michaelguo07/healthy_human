@@ -179,9 +179,31 @@ window.ReviewManager = (function () {
     return newReview;
   }
 
+  function seedFirestoreReviews() {
+    if (!window.db) return;
+    window.db.collection('reviews').get().then(function (snapshot) {
+      if (snapshot.empty) {
+        DEFAULT_REVIEWS.forEach(function (r) {
+          window.db.collection('reviews').add({
+            name: r.name,
+            role: r.role,
+            rating: r.rating,
+            date: r.date,
+            comment: r.comment,
+            createdAt: r.date + 'T12:00:00.000Z'
+          });
+        });
+      }
+    }).catch(function (err) {
+      console.warn('ReviewManager: Firestore seed check', err);
+    });
+  }
+
   function initFirestoreListener(renderCallback) {
     if (isListenerInitialized || !window.db) return;
     isListenerInitialized = true;
+
+    seedFirestoreReviews();
 
     try {
       window.db.collection('reviews').onSnapshot(function (snapshot) {
