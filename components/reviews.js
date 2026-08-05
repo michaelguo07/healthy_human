@@ -116,6 +116,29 @@ window.ReviewManager = (function () {
     return dateStr;
   }
 
+  function getTimestampMs(r) {
+    if (!r) return 0;
+    if (r.createdAt) {
+      if (typeof r.createdAt.toMillis === 'function') {
+        return r.createdAt.toMillis();
+      }
+      if (typeof r.createdAt.seconds === 'number') {
+        return r.createdAt.seconds * 1000;
+      }
+      if (typeof r.createdAt === 'number') {
+        return r.createdAt;
+      }
+      var t1 = new Date(r.createdAt).getTime();
+      if (!isNaN(t1) && t1 > 0) return t1;
+    }
+    if (r.timestampMs) return r.timestampMs;
+    if (r.date) {
+      var t2 = new Date(r.date + 'T12:00:00Z').getTime();
+      if (!isNaN(t2) && t2 > 0) return t2;
+    }
+    return 0;
+  }
+
   function getReviews() {
     var local = getLocalReviews();
     local.forEach(function (r) {
@@ -140,10 +163,13 @@ window.ReviewManager = (function () {
       }
     });
 
-    // Sort: user submitted reviews first, then by date descending (newest first)
+    // Sort: exact creation timestamp descending (newest timestamp first)
     unique.sort(function (a, b) {
-      if (a.isUserSubmitted && !b.isUserSubmitted) return -1;
-      if (!a.isUserSubmitted && b.isUserSubmitted) return 1;
+      var tA = getTimestampMs(a);
+      var tB = getTimestampMs(b);
+      if (tA !== tB) {
+        return tB - tA;
+      }
       var dateA = String(a.date || '');
       var dateB = String(b.date || '');
       return dateA < dateB ? 1 : dateA > dateB ? -1 : 0;
@@ -167,12 +193,14 @@ window.ReviewManager = (function () {
       throw new Error('Name, rating, and comment are required.');
     }
 
+    var nowMs = Date.now();
     var newReview = {
-      id: 'user-' + Date.now(),
+      id: 'user-' + nowMs,
       name: data.name.trim(),
       role: data.role ? data.role.trim() : 'Parent / Caregiver',
       rating: Math.min(5, Math.max(1, parseInt(data.rating, 10) || 5)),
       date: getTodayLocalISO(),
+      timestampMs: nowMs,
       comment: data.comment.trim(),
       isUserSubmitted: true
     };
@@ -265,9 +293,24 @@ window.ReviewManager = (function () {
             rating: data.rating || 5,
             date: itemDate,
             comment: data.comment || '',
+            createdAt: data.createdAt,
             isRemote: true
           });
         });
+
+        if (fetched.length > 0) {
+          remoteReviews = fetched;
+          if (typeof renderCallback === 'function') {
+            renderCallback();
+          }
+        }
+      }, function (err) {
+        console.warn('ReviewManager: Firestore listener fallback to local', err);
+      });
+    } catch (e) {
+      console.warn('ReviewManager: Could not initialize Firestore listener', e);
+    }
+  }
 
         if (fetched.length > 0) {
           remoteReviews = fetched;
