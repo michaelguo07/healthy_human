@@ -136,6 +136,16 @@ window.ReviewManager = (function () {
     return unique;
   }
 
+  function getTodayLocalISO() {
+    var d = new Date();
+    var year = d.getFullYear();
+    var month = String(d.getMonth() + 1);
+    if (month.length < 2) month = '0' + month;
+    var day = String(d.getDate());
+    if (day.length < 2) day = '0' + day;
+    return year + '-' + month + '-' + day;
+  }
+
   function addReview(data) {
     if (!data || !data.name || !data.comment || !data.rating) {
       throw new Error('Name, rating, and comment are required.');
@@ -146,7 +156,7 @@ window.ReviewManager = (function () {
       name: data.name.trim(),
       role: data.role ? data.role.trim() : 'Parent / Caregiver',
       rating: Math.min(5, Math.max(1, parseInt(data.rating, 10) || 5)),
-      date: new Date().toISOString().split('T')[0],
+      date: getTodayLocalISO(),
       comment: data.comment.trim(),
       isUserSubmitted: true
     };
